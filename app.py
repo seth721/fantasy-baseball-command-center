@@ -988,29 +988,49 @@ with st.sidebar:
         )
 
         with st.expander("📖 How to find your tokens (step by step)"):
-            st.markdown(
-                """
-**On Chrome or Edge:**
+            _browser = st.selectbox(
+                "Which browser are you using?",
+                ["— Select your browser —", "Chrome", "Edge", "Safari", "Firefox"],
+                key="browser_select",
+            )
+            _browser_steps = {
+                "Chrome": """
 1. Go to [fantasy.espn.com](https://fantasy.espn.com) and make sure you're **logged in**
 2. Press **F12** on your keyboard (or right-click anywhere → **Inspect**)
-3. Click the **Application** tab at the top of the panel that opens
-4. On the left side, click **Cookies** → then click **fantasy.espn.com**
-5. Find the row named **espn_s2** — click it and copy the long value
-6. Find the row named **SWID** — click it and copy the value (it has curly braces `{}`)
-
-**On Safari:**
-1. Go to [fantasy.espn.com](https://fantasy.espn.com) and log in
-2. In the menu bar click **Develop** → **Show Web Inspector**
-   *(If you don't see Develop: Safari → Preferences → Advanced → check "Show Develop menu")*
-3. Click **Storage** → **Cookies** → **fantasy.espn.com**
-4. Find and copy **espn_s2** and **SWID**
-
-**On Firefox:**
-1. Go to [fantasy.espn.com](https://fantasy.espn.com) and log in
-2. Press **F12** → click **Storage** tab → **Cookies** → **fantasy.espn.com**
-3. Find and copy **espn_s2** and **SWID**
-                """
-            )
+3. Click the **Application** tab at the top of the panel
+4. On the left, click **Cookies** → then click **fantasy.espn.com**
+5. Find the row named **espn_s2** — copy the long value
+6. Find the row named **SWID** — copy the value (includes the curly braces `{}`)
+""",
+                "Edge": """
+1. Go to [fantasy.espn.com](https://fantasy.espn.com) and make sure you're **logged in**
+2. Press **F12** on your keyboard (or right-click anywhere → **Inspect**)
+3. Click the **Application** tab at the top of the panel
+4. On the left, click **Cookies** → then click **fantasy.espn.com**
+5. Find the row named **espn_s2** — copy the long value
+6. Find the row named **SWID** — copy the value (includes the curly braces `{}`)
+""",
+                "Safari": """
+1. Go to [fantasy.espn.com](https://fantasy.espn.com) and make sure you're **logged in**
+2. In the top menu bar click **Develop** → **Show Web Inspector**
+   *(Don't see Develop? Go to Safari → Settings → Advanced → check "Show Develop menu")*
+3. Click the **Storage** tab → **Cookies** → **fantasy.espn.com**
+4. Find the row named **espn_s2** — copy the long value
+5. Find the row named **SWID** — copy the value (includes the curly braces `{}`)
+""",
+                "Firefox": """
+1. Go to [fantasy.espn.com](https://fantasy.espn.com) and make sure you're **logged in**
+2. Press **F12** on your keyboard
+3. Click the **Storage** tab at the top of the panel
+4. Click **Cookies** → **fantasy.espn.com**
+5. Find the row named **espn_s2** — copy the long value
+6. Find the row named **SWID** — copy the value (includes the curly braces `{}`)
+""",
+            }
+            if _browser in _browser_steps:
+                st.markdown(_browser_steps[_browser])
+            elif _browser == "— Select your browser —":
+                st.caption("Select your browser above to see instructions.")
 
         espn_s2 = st.text_input(
             "ESPN Token  (espn_s2)",
