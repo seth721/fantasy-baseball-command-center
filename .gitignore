@@ -1,0 +1,22 @@
+# ESPN credentials — never commit these
+.espn_config.json
+.streamlit/secrets.toml
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+# Environment
+.env
+.venv
+venv/
+env/
+
+# macOS
+.DS_Store
