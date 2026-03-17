@@ -969,7 +969,14 @@ with st.sidebar:
             min_value=1, step=1,
             value=cfg.get("league_id") or None,
             placeholder="e.g. 336594",
-            help="Find this in your ESPN Fantasy Baseball URL — it's the number after ?leagueId= or /leagues/",
+        )
+        st.markdown(
+            "<div style='font-size:11px;color:#64748B;margin:-8px 0 10px 2px'>"
+            "📍 Go to <b>fantasy.espn.com</b> → your league → look at the URL:<br>"
+            "<span style='font-family:monospace;background:#F1F5F9;padding:2px 5px;"
+            "border-radius:4px;font-size:11px'>...fantasy/baseball/leagues/<b style='color:#1565C0'>336594</b></span>"
+            "</div>",
+            unsafe_allow_html=True,
         )
         year = st.number_input(
             "Season Year",
@@ -981,7 +988,14 @@ with st.sidebar:
             min_value=1, step=1,
             value=cfg.get("team_id") or None,
             placeholder="e.g. 3",
-            help="Go to your ESPN team page. Look at the URL for ?teamId=3 — that number is your team ID.",
+        )
+        st.markdown(
+            "<div style='font-size:11px;color:#64748B;margin:-8px 0 10px 2px'>"
+            "📍 Click <b>My Team</b> in ESPN → look at the URL:<br>"
+            "<span style='font-family:monospace;background:#F1F5F9;padding:2px 5px;"
+            "border-radius:4px;font-size:11px'>...leagueId=336594&<b style='color:#1565C0'>teamId=3</b></span>"
+            "</div>",
+            unsafe_allow_html=True,
         )
 
         st.divider()
@@ -1113,6 +1127,62 @@ with st.sidebar:
         f"padding:6px 2px; white-space:normal; word-wrap:break-word;'>{desc}</div>",
         unsafe_allow_html=True,
     )
+
+    # ── Terms & Conditions (sidebar bottom) ──────────────────────────────────
+    st.markdown("<div style='margin-top:24px'></div>", unsafe_allow_html=True)
+    with st.expander("📋 Terms & Conditions"):
+        st.markdown("""
+**Fantasy Baseball Command Center**
+*Last updated: March 2026*
+
+**For Entertainment Purposes Only**
+This application is provided solely for recreational and entertainment purposes.
+All statistics, projections, grades, and recommendations are informational only
+and do not constitute professional sports, financial, or gambling advice.
+
+**Projections Disclaimer**
+All player projections, grades, rankings, and statistical forecasts displayed in
+this app are derived from third-party sources (FanGraphs, ESPN) and are provided
+as a **general reference guide only**. The creator claims no ownership of any
+projection data and makes no guarantee that any projection will reflect actual
+player performance. Projections are inherently speculative — past performance
+does not guarantee future results. **Do not make significant fantasy decisions
+based solely on this data.**
+
+**No Warranty**
+The creator makes no representations or warranties of any kind regarding the
+accuracy, completeness, or timeliness of any data displayed. Stats and projections
+may contain errors, be delayed, or become outdated at any time without notice.
+
+**Limitation of Liability**
+The creator shall not be liable for any roster decisions, waiver claims, trades,
+or other fantasy baseball actions taken based on information provided by this app.
+All decisions are made solely at the user's own risk and discretion.
+
+**Third-Party Data**
+This app uses data from the following sources, which retain all rights to their
+respective data and intellectual property:
+
+- **ESPN** — Fantasy league data via the ESPN Fantasy API.
+  ESPN and its affiliates own all rights to their platform data.
+- **FanGraphs** — Player projections (Steamer, ZiPS, Depth Charts, ATC, THE BAT).
+  FanGraphs retains all rights to their projection systems and data.
+- **MLB / MLB Advanced Media** — Player names, team names, and statistical data
+  are the property of MLB and its member clubs.
+- **MLBPA** — Player names and likenesses are rights of the MLB Players Association.
+- **ESPN CDN** — Player headshot images are property of ESPN.
+
+**No Affiliation**
+This app is an independent, unofficial tool and is not affiliated with, endorsed
+by, or sponsored by ESPN, MLB, FanGraphs, or the MLBPA.
+
+**Personal Use**
+This app is intended for personal, non-commercial use. Redistribution or resale
+of the app or its outputs without appropriate licensing of the underlying data
+sources is not permitted.
+
+By using this app you agree to these terms.
+""")
 
 # Fallback values when expander is collapsed (widgets don't render → vars undefined)
 if "connect"   not in dir(): connect   = False
@@ -5923,3 +5993,29 @@ with tab9:
                     "Trend (last 3)": st.column_config.TextColumn("Trend", width="small"),
                 },
             )
+
+
+# ── App Footer ────────────────────────────────────────────────────────────────
+st.markdown("<div style='margin-top:48px'></div>", unsafe_allow_html=True)
+st.markdown(
+    """<div style="border-top:1px solid rgba(148,163,184,0.25);padding:18px 4px 8px;
+        text-align:center;color:#94A3B8;font-size:11px;line-height:1.8">
+      <b style="color:#64748B">Fantasy Baseball Command Center</b> &nbsp;·&nbsp;
+      For entertainment &amp; reference purposes only &nbsp;·&nbsp;
+      Not affiliated with ESPN, MLB, FanGraphs, or the MLBPA<br>
+      Player data © ESPN &nbsp;·&nbsp; Projections © FanGraphs &nbsp;·&nbsp;
+      MLB statistics © MLB Advanced Media &nbsp;·&nbsp;
+      Player likenesses © MLBPA<br>
+      <span style="font-size:10px">
+        All projections are third-party estimates provided as a reference guide only —
+        the creator claims no ownership and accepts no liability for fantasy decisions.
+        Use at your own risk. &nbsp;·&nbsp;
+        <a href="#" style="color:#94A3B8;text-decoration:underline"
+           onclick="window.parent.document.querySelector('[data-testid=stSidebar]')
+                    .querySelector('details:last-of-type summary').click()">
+          Terms &amp; Conditions
+        </a>
+      </span>
+    </div>""",
+    unsafe_allow_html=True,
+)
