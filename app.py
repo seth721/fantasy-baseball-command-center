@@ -942,10 +942,21 @@ with st.sidebar:
         unsafe_allow_html=True,
     )
 
-    with st.expander(
-        "✅ Connected — click to update" if already_connected else "🔑 Connect Your ESPN League",
-        expanded=not already_connected,
-    ):
+    if already_connected:
+        _expander_label = "✅ Connected — click to update"
+    else:
+        _expander_label = "🔑 First time? Set up your league here"
+
+    with st.expander(_expander_label, expanded=not already_connected):
+        if not already_connected:
+            st.markdown(
+                "<div style='background:#EFF6FF;border-left:3px solid #1565C0;"
+                "border-radius:6px;padding:8px 12px;font-size:12px;color:#1565C0;"
+                "margin-bottom:10px'>"
+                "👋 Welcome! Fill in the three fields below and paste your ESPN "
+                "tokens to connect your league. Takes about 2 minutes.</div>",
+                unsafe_allow_html=True,
+            )
 
         # ── Step 1 ────────────────────────────────────────────────────────────
         st.markdown(
@@ -1047,6 +1058,12 @@ with st.sidebar:
         )
 
         st.divider()
+        remember_me = st.checkbox(
+            "Remember me on this device",
+            value=True,
+            help="Save your credentials locally so you don't have to re-enter them next time. "
+                 "Uncheck if you're on a shared computer.",
+        )
         connect = st.button("🔌 Connect to My League", type="primary", use_container_width=True)
 
     st.divider()
@@ -1187,9 +1204,10 @@ if connect:
                     st.session_state.league_prev = league_prev
                 except Exception:
                     st.session_state.league_prev = None
-                save_config({"league_id": int(league_id), "year": int(year),
-                             "team_id": int(team_id) if team_id else None,
-                             "espn_s2": espn_s2, "swid": swid})
+                if remember_me:
+                    save_config({"league_id": int(league_id), "year": int(year),
+                                 "team_id": int(team_id) if team_id else None,
+                                 "espn_s2": espn_s2, "swid": swid})
                 st.rerun()
             except Exception as e:
                 st.sidebar.error(f"Connection failed: {e}")
