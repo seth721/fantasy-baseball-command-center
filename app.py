@@ -791,6 +791,13 @@ hr { border-color: rgba(148,163,184,0.25) !important; }
 /* ── Spinner ── */
 .stSpinner > div { border-top-color: #1565C0 !important; }
 
+/* ── Sidebar — scrollable at all resolutions ── */
+[data-testid="stSidebar"] > div:first-child {
+    overflow-y: auto !important;
+    height: 100vh !important;
+    padding-bottom: 2rem !important;
+}
+
 /* ── Tab bar — pill active tab ── */
 [data-testid="stTabs"] {
     border-bottom: none !important;
