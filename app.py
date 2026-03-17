@@ -930,8 +930,14 @@ def save_config(data: dict) -> None:
 
 cfg = load_config()
 
+# ── T&C version — bump this string whenever Terms & Conditions are updated ───
+# Users who agreed to an older version will be asked to re-agree automatically.
+_TC_CURRENT_VERSION = "1.1"   # Updated March 2026
+
 # ── Sidebar: Auth ────────────────────────────────────────────────────────────
-already_connected = bool(cfg.get("league_id") and cfg.get("espn_s2") and cfg.get("swid"))
+already_connected  = bool(cfg.get("league_id") and cfg.get("espn_s2") and cfg.get("swid"))
+_tc_agreed_version = cfg.get("tc_version", "")
+_tc_needs_agreement = _tc_agreed_version != _TC_CURRENT_VERSION
 
 with st.sidebar:
     st.markdown(
@@ -1072,13 +1078,43 @@ with st.sidebar:
         )
 
         st.divider()
+
+        # ── T&C agreement — shown first time or when T&C version changes ──────
+        if _tc_needs_agreement:
+            if already_connected:
+                st.warning(
+                    "⚠️ Our Terms & Conditions have been updated. "
+                    "Please review and agree before reconnecting.",
+                    icon="📋",
+                )
+            tc_agreed = st.checkbox(
+                "I have read and agree to the [Terms & Conditions](#) — "
+                "for entertainment and reference purposes only.",
+                value=False,
+                key="tc_checkbox",
+            )
+            st.caption(
+                "Scroll to the bottom of the sidebar to read the full Terms & Conditions. "
+                f"Current version: {_TC_CURRENT_VERSION}"
+            )
+        else:
+            tc_agreed = True   # Already agreed to current version — don't ask again
+
         remember_me = st.checkbox(
             "Remember me on this device",
             value=True,
             help="Save your credentials locally so you don't have to re-enter them next time. "
                  "Uncheck if you're on a shared computer.",
         )
-        connect = st.button("🔌 Connect to My League", type="primary", use_container_width=True)
+
+        connect = st.button(
+            "🔌 Connect to My League",
+            type="primary",
+            use_container_width=True,
+            disabled=not tc_agreed,
+        )
+        if not tc_agreed:
+            st.caption("☝️ Please agree to the Terms & Conditions to continue.")
 
     st.divider()
     st.subheader("⚙️ Projections")
@@ -1277,7 +1313,8 @@ if connect:
                 if remember_me:
                     save_config({"league_id": int(league_id), "year": int(year),
                                  "team_id": int(team_id) if team_id else None,
-                                 "espn_s2": espn_s2, "swid": swid})
+                                 "espn_s2": espn_s2, "swid": swid,
+                                 "tc_version": _TC_CURRENT_VERSION})
                 st.rerun()
             except Exception as e:
                 st.sidebar.error(f"Connection failed: {e}")
@@ -2110,6 +2147,199 @@ with tab0:
         unsafe_allow_html=True,
     )
 
+    st.divider()
+
+    # ── Skip McGee — Daily GM Take ────────────────────────────────────────────
+    _GM_QUOTES = {
+        "satisfied": [
+            "Now THAT'S a roster. You know what my old skipper used to say? 'Win ugly, win pretty — just win.' Right now you're winning pretty.",
+            "Top of the standings AND ahead in the matchup. I'd be smiling if I hadn't been doing this long enough to know it can all fall apart by Thursday.",
+            "Look at those numbers. Even my worst scout would sign off on this week. Don't get cocky — but enjoy it.",
+            "I'll be honest — I didn't think you had it in you. I'm not above admitting when I'm wrong. This week, anyway.",
+            "You're playing with house money right now, kid. Keep the lineup tight and don't get clever on the wire.",
+            "This is what we built this roster for. Enjoy it. Just don't stop checking the waiver wire.",
+        ],
+        "pleased": [
+            "You're up in the matchup. Good. The bad news is I've seen more leads blown in fantasy than in the '64 Phillies season. Stay alert.",
+            "Winning is a habit. So is losing. You're building the right one this week.",
+            "Not bad. You've got the matchup in hand. Now go find me a two-start pitcher on the wire and really bury 'em.",
+            "Good week so far. But I want ERA locked down before you start celebrating. Pitching wins championships — even fake ones.",
+            "I've been known to say you can't judge a week until Sunday night. But I'll give you this — you're doing alright.",
+            "Keep it up. And check that waiver wire. Every. Single. Day.",
+        ],
+        "skeptical": [
+            "Could go either way. That's the game, kid. That's always been the game.",
+            "One good streaming pickup changes everything right now. You paying attention to the wire?",
+            "I've watched enough baseball to know the team that looks comfortable on Wednesday loses by Sunday. Don't get comfortable.",
+            "This is the moment that separates managers from fantasy players. What's your move?",
+            "We need to talk about your weak spots. You know what they are. So does your opponent.",
+            "Tied up. Which means you need to make a move. The wire doesn't browse itself.",
+        ],
+        "concerned": [
+            "I'm not gonna sugarcoat it. You're behind. Time to get aggressive on the wire.",
+            "I've seen worse comebacks. I've also seen worse situations stay worse. Get moving.",
+            "You know what my problem is with this week? You're giving away free categories. That stops today.",
+            "The waiver wire exists for a reason. Use it. Right now.",
+            "This isn't Little League. You don't get a participation trophy for showing up.",
+            "Behind in the matchup. The season standings aren't great either. This is not the time to be passive.",
+        ],
+        "furious": [
+            "What in the Sam Hill is happening out there? This is embarrassing.",
+            "I've been in this game 40 years. This is one of the worst weeks I've seen from a roster this loaded.",
+            "You want to know what your problem is? I'll tell you exactly — you're not paying attention.",
+            "My grandmother could find a better streaming option than what you've been trotting out. And she doesn't follow baseball.",
+            "This is a crisis. I don't use that word lightly. Fix it.",
+            "I haven't been this upset since they moved the mound back. Do something.",
+        ],
+    }
+
+    # Determine mood from matchup + season data
+    _total_cats = len(_ALL_CATS)
+    if _wins_fo >= _total_cats - 2 or (_wins_fo > _losses_fo + 2 and _my_season_rank_pre <= max(1, _n // 3)):
+        _gm_mood = "satisfied"
+    elif _wins_fo > _losses_fo:
+        _gm_mood = "pleased"
+    elif _losses_fo > _wins_fo + 3 or _my_season_rank_pre >= _n - 1:
+        _gm_mood = "furious"
+    elif _losses_fo > _wins_fo:
+        _gm_mood = "concerned"
+    else:
+        _gm_mood = "skeptical"
+
+    # Pick quote deterministically for today
+    _gm_pool  = _GM_QUOTES[_gm_mood]
+    _gm_quote = _gm_pool[_hdr_doy % len(_gm_pool)]
+
+    # Situation context line (based on actual team data)
+    _gm_context = ""
+    if _lose_cats_fo:
+        _gm_context = f"📌 You're losing: <b>{', '.join(_lose_cats_fo)}</b>."
+    if _my_season_rank_pre > _n // 2:
+        _gm_context += f" Season rank: <b>#{_my_season_rank_pre} of {_n}</b> — not where we need to be."
+    elif _my_season_rank_pre <= 3:
+        _gm_context += f" Season rank: <b>#{_my_season_rank_pre} of {_n}</b> — keep it going."
+
+    # Mood-specific avatar CSS
+    _gm_styles = {
+        "satisfied": dict(
+            bg="#F0FDF4", border="#22C55E",
+            hat="#1a3a5c", suit="#1e3a5f",
+            eyebrow_l="transform:rotate(5deg)", eyebrow_r="transform:rotate(-5deg)",
+            eye_h=6, eye_extra="",
+            mouth_style="width:22px;height:11px;border-radius:0 0 22px 22px;"
+                        "border:2px solid #5c3d2e;border-top:none;margin:0 auto",
+            mood_label="😎 Leaning back — loving what he sees",
+        ),
+        "pleased": dict(
+            bg="#FFFBEB", border="#F59E0B",
+            hat="#1a3a5c", suit="#1e3a5f",
+            eyebrow_l="", eyebrow_r="",
+            eye_h=6, eye_extra="",
+            mouth_style="width:16px;height:8px;border-radius:0 0 16px 16px;"
+                        "border:2px solid #5c3d2e;border-top:none;margin:0 auto",
+            mood_label="🙂 Nodding — cautiously optimistic",
+        ),
+        "skeptical": dict(
+            bg="#F8FAFF", border="#94A3B8",
+            hat="#2d2d2d", suit="#374151",
+            eyebrow_l="transform:rotate(-8deg);margin-top:-2px",
+            eyebrow_r="transform:rotate(8deg);margin-top:-2px",
+            eye_h=5, eye_extra="",
+            mouth_style="width:18px;height:3px;background:#5c3d2e;"
+                        "border-radius:2px;margin:0 auto",
+            mood_label="🤔 Arms crossed — not convinced",
+        ),
+        "concerned": dict(
+            bg="#FFFBEB", border="#F59E0B",
+            hat="#2d2d2d", suit="#374151",
+            eyebrow_l="transform:rotate(12deg);transform-origin:right",
+            eyebrow_r="transform:rotate(-12deg);transform-origin:left",
+            eye_h=5, eye_extra="",
+            mouth_style="width:16px;height:8px;border-radius:16px 16px 0 0;"
+                        "border:2px solid #5c3d2e;border-bottom:none;margin:0 auto",
+            mood_label="😟 Pacing — worried about this week",
+        ),
+        "furious": dict(
+            bg="#FFF5F5", border="#EF4444",
+            hat="#1a1a1a", suit="#1a1a1a",
+            eyebrow_l="transform:rotate(20deg);transform-origin:right;margin-top:-3px",
+            eyebrow_r="transform:rotate(-20deg);transform-origin:left;margin-top:-3px",
+            eye_h=4, eye_extra="border-radius:2px",
+            mouth_style="width:20px;height:9px;border-radius:20px 20px 0 0;"
+                        "border:2px solid #5c3d2e;border-bottom:none;margin:0 auto",
+            mood_label="😤 Standing up — not happy at all",
+        ),
+    }
+    _gs = _gm_styles[_gm_mood]
+
+    _context_html = (
+        f"<div style='font-size:11px;color:#64748B;margin-top:10px;"
+        f"padding-top:8px;border-top:1px solid rgba(0,0,0,0.07)'>{_gm_context}</div>"
+    ) if _gm_context else ""
+
+    st.markdown(
+        f"""<div style="background:{_gs['bg']};border:1.5px solid {_gs['border']};
+                border-radius:16px;padding:18px 20px;margin-bottom:4px">
+          <div style="font-size:10px;font-weight:800;color:#64748B;letter-spacing:1.2px;
+                      margin-bottom:12px">⚾ SKIP McGEE'S DAILY TAKE</div>
+          <div style="display:flex;align-items:flex-start;gap:18px">
+
+            <!-- Avatar -->
+            <div style="flex-shrink:0;text-align:center;width:72px">
+              <div style="width:64px;height:7px;background:{_gs['hat']};
+                          border-radius:3px;margin:0 auto 0px"></div>
+              <div style="width:48px;height:20px;background:{_gs['hat']};
+                          border-radius:5px 5px 0 0;margin:0 auto"></div>
+              <div style="width:54px;height:52px;background:#FDBCB4;
+                          border-radius:50% 50% 44% 44%;margin:0 auto;
+                          display:flex;flex-direction:column;
+                          align-items:center;justify-content:center;gap:3px">
+                <div style="display:flex;gap:10px">
+                  <div style="width:11px;height:2.5px;background:#5c3d2e;
+                              border-radius:2px;{_gs['eyebrow_l']}"></div>
+                  <div style="width:11px;height:2.5px;background:#5c3d2e;
+                              border-radius:2px;{_gs['eyebrow_r']}"></div>
+                </div>
+                <div style="display:flex;gap:10px">
+                  <div style="width:7px;height:{_gs['eye_h']}px;background:#2c1810;
+                              border-radius:50%;{_gs['eye_extra']}"></div>
+                  <div style="width:7px;height:{_gs['eye_h']}px;background:#2c1810;
+                              border-radius:50%;{_gs['eye_extra']}"></div>
+                </div>
+                <div style="{_gs['mouth_style']}"></div>
+              </div>
+              <div style="width:18px;height:7px;background:#FDBCB4;margin:0 auto"></div>
+              <div style="width:60px;height:32px;background:{_gs['suit']};
+                          border-radius:5px 5px 0 0;margin:0 auto;
+                          display:flex;justify-content:center;padding-top:2px">
+                <div style="width:9px;height:28px;background:#B91C1C;
+                            clip-path:polygon(20% 0%,80% 0%,95% 65%,50% 100%,5% 65%)">
+                </div>
+              </div>
+              <div style="font-size:9px;color:#64748B;margin-top:5px;
+                          font-weight:700;line-height:1.3">Skip McGee<br>
+                <span style="font-weight:400;font-style:italic">{_gs['mood_label']}</span>
+              </div>
+            </div>
+
+            <!-- Speech bubble -->
+            <div style="flex:1;background:white;border-radius:12px;padding:14px 16px;
+                        position:relative;border:1px solid rgba(0,0,0,0.08);
+                        box-shadow:0 2px 8px rgba(0,0,0,0.06)">
+              <div style="position:absolute;left:-9px;top:18px;width:0;height:0;
+                          border-top:9px solid transparent;
+                          border-bottom:9px solid transparent;
+                          border-right:9px solid white"></div>
+              <div style="font-size:14px;color:#0F3460;font-style:italic;
+                          line-height:1.65">&ldquo;{_gm_quote}&rdquo;</div>
+              {_context_html}
+            </div>
+          </div>
+        </div>""",
+        unsafe_allow_html=True,
+    )
+
+    st.markdown("<div style='margin-bottom:8px'></div>", unsafe_allow_html=True)
     st.divider()
 
     _fo_tab_today, _fo_tab_season = st.tabs([
