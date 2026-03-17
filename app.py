@@ -934,39 +934,100 @@ cfg = load_config()
 already_connected = bool(cfg.get("league_id") and cfg.get("espn_s2") and cfg.get("swid"))
 
 with st.sidebar:
-    st.header("ESPN League Settings")
+    st.markdown(
+        "<div style='font-size:18px;font-weight:800;color:#0F3460;margin-bottom:4px'>"
+        "⚾ Fantasy HQ</div>"
+        "<div style='font-size:12px;color:#64748B;margin-bottom:12px'>"
+        "Connect your ESPN league to get started</div>",
+        unsafe_allow_html=True,
+    )
 
     with st.expander(
-        "✅ Connected — click to edit credentials" if already_connected else "🔑 Enter credentials",
+        "✅ Connected — click to update" if already_connected else "🔑 Connect Your ESPN League",
         expanded=not already_connected,
     ):
+
+        # ── Step 1 ────────────────────────────────────────────────────────────
         st.markdown(
-            "Need your cookies? [See instructions](#how-to-get-your-espn-cookies) below."
+            "<div style='font-size:12px;font-weight:800;color:#1565C0;"
+            "letter-spacing:0.5px;margin-bottom:6px'>STEP 1 — YOUR LEAGUE</div>",
+            unsafe_allow_html=True,
         )
-        league_id = st.number_input("League ID", min_value=1, step=1,
-                                    value=cfg.get("league_id") or None,
-                                    placeholder="e.g. 12345678")
-        year = st.number_input("Season Year", min_value=2020, max_value=2026,
-                               value=cfg.get("year", 2025), step=1)
-        team_id = st.number_input("My Team ID", min_value=1, step=1,
-                                  value=cfg.get("team_id") or None,
-                                  placeholder="e.g. 3",
-                                  help="Your team's ID number in the league (1–N). Check the URL on your ESPN team page: ?teamId=X")
-        espn_s2 = st.text_input("espn_s2 cookie", type="password",
-                                 value=cfg.get("espn_s2", ""))
-        swid = st.text_input("SWID cookie", value=cfg.get("swid", ""),
-                             placeholder="{XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX}")
-        connect = st.button("Connect to League", type="primary")
+        league_id = st.number_input(
+            "League ID",
+            min_value=1, step=1,
+            value=cfg.get("league_id") or None,
+            placeholder="e.g. 336594",
+            help="Find this in your ESPN Fantasy Baseball URL — it's the number after ?leagueId= or /leagues/",
+        )
+        year = st.number_input(
+            "Season Year",
+            min_value=2020, max_value=2030,
+            value=cfg.get("year", 2026), step=1,
+        )
+        team_id = st.number_input(
+            "My Team Number",
+            min_value=1, step=1,
+            value=cfg.get("team_id") or None,
+            placeholder="e.g. 3",
+            help="Go to your ESPN team page. Look at the URL for ?teamId=3 — that number is your team ID.",
+        )
 
         st.divider()
-        st.markdown("**How to get your ESPN cookies**")
+
+        # ── Step 2 ────────────────────────────────────────────────────────────
         st.markdown(
-            """
-1. Open [ESPN Fantasy Baseball](https://fantasy.espn.com) and log in.
-2. Open browser DevTools → **Application** → **Cookies** → `fantasy.espn.com`.
-3. Copy the values of **espn_s2** and **SWID**.
-            """
+            "<div style='font-size:12px;font-weight:800;color:#1565C0;"
+            "letter-spacing:0.5px;margin-bottom:6px'>STEP 2 — ESPN LOGIN TOKENS</div>",
+            unsafe_allow_html=True,
         )
+        st.info(
+            "ESPN requires two login tokens to access your private league. "
+            "You only need to do this once — they don't expire.",
+            icon="🔐",
+        )
+
+        with st.expander("📖 How to find your tokens (step by step)"):
+            st.markdown(
+                """
+**On Chrome or Edge:**
+1. Go to [fantasy.espn.com](https://fantasy.espn.com) and make sure you're **logged in**
+2. Press **F12** on your keyboard (or right-click anywhere → **Inspect**)
+3. Click the **Application** tab at the top of the panel that opens
+4. On the left side, click **Cookies** → then click **fantasy.espn.com**
+5. Find the row named **espn_s2** — click it and copy the long value
+6. Find the row named **SWID** — click it and copy the value (it has curly braces `{}`)
+
+**On Safari:**
+1. Go to [fantasy.espn.com](https://fantasy.espn.com) and log in
+2. In the menu bar click **Develop** → **Show Web Inspector**
+   *(If you don't see Develop: Safari → Preferences → Advanced → check "Show Develop menu")*
+3. Click **Storage** → **Cookies** → **fantasy.espn.com**
+4. Find and copy **espn_s2** and **SWID**
+
+**On Firefox:**
+1. Go to [fantasy.espn.com](https://fantasy.espn.com) and log in
+2. Press **F12** → click **Storage** tab → **Cookies** → **fantasy.espn.com**
+3. Find and copy **espn_s2** and **SWID**
+                """
+            )
+
+        espn_s2 = st.text_input(
+            "ESPN Token  (espn_s2)",
+            type="password",
+            value=cfg.get("espn_s2", ""),
+            placeholder="Starts with AEB...",
+            help="The long token from ESPN's cookies. Starts with 'AEB' and is several hundred characters long.",
+        )
+        swid = st.text_input(
+            "User ID  (SWID)",
+            value=cfg.get("swid", ""),
+            placeholder="{XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX}",
+            help="Include the curly braces { } when you paste this in.",
+        )
+
+        st.divider()
+        connect = st.button("🔌 Connect to My League", type="primary", use_container_width=True)
 
     st.divider()
     st.subheader("⚙️ Projections")
