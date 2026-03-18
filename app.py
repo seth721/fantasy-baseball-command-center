@@ -539,9 +539,150 @@ st.set_page_config(
     layout="wide"
 )
 
+# ── Vin Scully Daily Quotes (defined early so banner can use them) ────────────
+_SCULLY_QUOTES = [
+    "It's time for Dodger baseball!",
+    "Pull up a chair and spend the next three hours with us.",
+    "Hi everybody, and a very pleasant good evening to you, wherever you may be.",
+    "Statistics are used much like a drunk uses a lamppost: for support, not illumination.",
+    "Andre Dawson has a bruised knee and is listed as day-to-day. Aren't we all?",
+    "Baseball is not a sport you can achieve individually.",
+    "In a year that has been so improbable, the impossible has happened.",
+    "It's a great day for a ball game; let's play two!",
+    "The Brooklyn Dodgers have won the World Series — and I don't believe it!",
+    "Sandy Koufax, with a new Dodger record, his 25th victory of the season.",
+    "There are three things you can do in a baseball game: you can win, or you can lose, or it can rain.",
+    "I'd rather have a life I can be proud of than a name people remember.",
+    "Baseball is the theater of the unexpected.",
+    "Good evening, everyone, and a pleasant good evening it is — tonight under the lights.",
+    "The game's the thing, and it's always been the thing.",
+    "Some days you're the Louisville Slugger. Some days you're the ball.",
+    "Once a Dodger, always a Dodger.",
+    "Behind the plate, the heart of the defense — the catcher sees everything.",
+    "Heeee struck him out! And the place is going absolutely wild!",
+    "Two teams on a diamond. Simple as it sounds, there's nothing simple about it.",
+    "Every great hitter works on the theory that the pitcher is more afraid of him than he is of the pitcher.",
+    "The most beautiful thing in the world is a ballpark filled with people.",
+    "He's sitting on a curveball… and he got it!",
+    "Vin Scully, honored to be here — and honored to share it with all of you.",
+    "The bullpen stirs. The crowd murmurs. Something's about to happen.",
+    "I've had a blessed life. Baseball gave me all of it.",
+    "A moment of silence in a ballpark is the loudest thing I've ever heard.",
+    "Nobody goes undefeated all the time. If you can pick up after a crushing defeat, and go on to win again, you are going to be a champion someday.",
+    "The stands are electric, the pitcher winds… this is why we love the game.",
+    "You know, friends, you can talk about your football and your basketball and your hockey — this is baseball. This is ours.",
+    "Pennant fever: there's no cure, and nobody's looking for one.",
+    "Don't be afraid to take an extra base. Fortune favors the bold.",
+    "It's the bottom of the ninth, two out, and the whole season on the line.",
+    "The pitcher has his sign. The catcher crouches. The batter digs in. Baseball.",
+    "Three balls, two strikes. The most beautiful count in sports.",
+    "That ball is… way back… and gone! A home run!",
+    "He winds and fires — strike three, called! And the crowd erupts!",
+    "There's nothing like a sunny afternoon in April when the season is brand new.",
+    "Hit deep to left field… back, back, back — it is GONE! Farewell!",
+    "In all my years behind the microphone, this game still surprises me every night.",
+    "The manager heads to the mound — this is the moment that separates good teams from great teams.",
+    "A ground ball through the left side, and here comes the tying run!",
+    "Every at-bat is a story. Every game is a novel.",
+    "The infield shift defies convention. Baseball always finds a way to keep you honest.",
+    "Line drive, right field — that's a base hit and the runner scores easily!",
+    "He's thrown out at second, but what a play by the center fielder!",
+    "Two on, two out, the cleanup hitter digs in. This is what it's all about.",
+    "They say you can't go home again. Nonsense. Come to a ballpark.",
+    "He checks the runners, he winds, he delivers — and that ball sails into the night.",
+    "And a very pleasant good night to you, wherever you may be.",
+    "Baseball: the game that time forgets, and fathers never do.",
+    "It was a September night in Los Angeles and the pennant was on the line.",
+]
+
+# ── This Day in MLB History (defined early so banner can use it) ──────────────
+_MLB_HISTORY = {
+    (1,  1): "1876 — The National League was formally organized in New York City, giving birth to Major League Baseball.",
+    (1,  5): "1920 — Babe Ruth was sold by the Red Sox to the Yankees for $100,000 — the most infamous trade in baseball history.",
+    (1, 26): "1939 — Lou Gehrig played in his 2,130th consecutive game just months before his retirement.",
+    (2,  2): "1876 — Albert Spalding published the first official baseball rulebook, standardizing the game nationwide.",
+    (2,  6): "1895 — Babe Ruth was born in Baltimore, Maryland. Happy Birthday, Sultan of Swat.",
+    (2, 10): "1936 — The Baseball Hall of Fame inducted its first five members: Cobb, Wagner, Ruth, Mathewson, and Johnson.",
+    (2, 26): "1934 — Hank Aaron was born in Mobile, Alabama. He would go on to hit 755 career home runs.",
+    (3,  2): "1962 — The New York Mets played their first-ever spring training game.",
+    (3,  5): "1946 — Enos Slaughter signed the first $50,000 contract in Cardinals history.",
+    (3, 16): "1962 — The Houston Colt .45s (later the Astros) played their inaugural spring training contest.",
+    (3, 26): "1953 — The Boston Braves officially became the Milwaukee Braves — the first franchise move in 50 years.",
+    (4,  1): "1973 — Ron Blomberg of the Yankees became baseball's first-ever designated hitter, walking in his debut PA.",
+    (4,  4): "1974 — Hank Aaron hit home run #715, breaking Babe Ruth's all-time record before a national TV audience.",
+    (4,  6): "1973 — The American League used the DH for the first time in regular-season play.",
+    (4,  8): "1974 — Hammerin' Hank Aaron launched #715 off Al Downing. 'What a marvelous moment for baseball.'",
+    (4, 11): "1954 — Hank Aaron played his first MLB game, going 0-for-5 but beginning a legendary 23-year career.",
+    (4, 14): "1910 — President William Howard Taft threw out the first ceremonial first pitch, starting a presidential tradition.",
+    (4, 15): "1947 — Jackie Robinson broke baseball's color barrier, stepping onto Ebbets Field in a Brooklyn Dodgers uniform.",
+    (4, 18): "1923 — Yankee Stadium opened. Babe Ruth christened it with a home run. The New York Times called it 'The House That Ruth Built.'",
+    (4, 22): "1970 — Tom Seaver struck out 19 Padres, including the last 10 in a row — a then-MLB record.",
+    (4, 27): "1983 — Montreal's Steve Rogers threw a complete-game shutout, becoming the 100th pitcher to reach 100 career wins.",
+    (4, 30): "1961 — Willie Mays hit four home runs in a single game against the Milwaukee Braves.",
+    (5,  1): "1991 — Nolan Ryan, age 44, threw his seventh career no-hitter — the most in MLB history.",
+    (5,  5): "1904 — Cy Young threw the first perfect game of the modern era.",
+    (5,  6): "1953 — Bobo Holloman threw a no-hitter in his very first Major League start.",
+    (5,  7): "1959 — Roy Campanella Night at the LA Coliseum drew 93,103 fans — the largest crowd in MLB history.",
+    (5, 10): "1970 — Ernie Banks played his 2,500th career game — all of them in a Cubs uniform.",
+    (5, 15): "1941 — Joe DiMaggio began his legendary 56-game hitting streak.",
+    (5, 17): "1998 — David Wells threw a perfect game for the Yankees vs. the Minnesota Twins.",
+    (5, 24): "1935 — The first-ever MLB night game was played at Crosley Field in Cincinnati under the lights.",
+    (5, 26): "1959 — Harvey Haddix pitched 12 perfect innings for Pittsburgh but lost the game in the 13th.",
+    (6,  2): "1941 — Lou Gehrig passed away at age 37, two years after calling himself 'the luckiest man on the face of the earth.'",
+    (6,  3): "1932 — Lou Gehrig hit four home runs in a single game against the Philadelphia Athletics.",
+    (6, 10): "1944 — Joe Nuxhall, age 15, pitched in a game for the Reds — the youngest player in modern MLB history.",
+    (6, 11): "2003 — Roger Clemens earned his 300th career win, also recording his 4,000th strikeout in the same game.",
+    (6, 12): "1939 — The Baseball Hall of Fame officially opened in Cooperstown, New York.",
+    (6, 19): "1846 — The first officially recorded baseball game under Cartwright's rules was played in Hoboken, New Jersey.",
+    (6, 21): "1964 — Jim Bunning of the Phillies threw a perfect game on Father's Day.",
+    (6, 23): "1917 — Babe Ruth was ejected after one pitch; Ernie Shore retired 26 straight batters in one of the most unusual near-perfectos ever.",
+    (7,  2): "1941 — Joe DiMaggio extended his hitting streak to 45 games, setting a then-American League record.",
+    (7,  4): "1939 — Lou Gehrig delivered his farewell speech at Yankee Stadium. 'Today I consider myself the luckiest man on the face of the earth.'",
+    (7,  6): "1933 — The first All-Star Game was played at Comiskey Park, with Babe Ruth hitting the game's first-ever homer.",
+    (7, 17): "1941 — Joe DiMaggio's 56-game hitting streak ended when Cleveland's pitchers held him hitless.",
+    (7, 24): "1983 — The Pine Tar Incident: George Brett's go-ahead HR was nullified by umpires. He stormed out of the dugout in fury.",
+    (7, 25): "1956 — Robin Roberts won his 200th career game, the first pitcher in NL history to reach that milestone.",
+    (7, 29): "1975 — Henry Aaron collected the 3,000th hit of his career.",
+    (8,  1): "1972 — Roberto Clemente recorded his 3,000th career hit — the last of his life. He died in a plane crash five months later.",
+    (8,  6): "1986 — Roger Clemens struck out 20 batters in a single game, setting an MLB record that still stands.",
+    (8, 12): "1994 — The MLB Players' Strike began, eventually canceling the World Series for the first time since 1904.",
+    (8, 16): "1948 — Babe Ruth passed away at age 53. Sixty thousand fans filed past his casket at Yankee Stadium.",
+    (8, 22): "1851 — The first recorded baseball game between two clubs took place in New York City.",
+    (8, 26): "1939 — The first MLB game was televised — a Reds-Dodgers doubleheader broadcast on W2XBS in New York.",
+    (9,  6): "1995 — Cal Ripken Jr. played in his 2,131st consecutive game, breaking Lou Gehrig's 'unbreakable' record.",
+    (9,  8): "1998 — Mark McGwire hit his 62nd home run, breaking Roger Maris's single-season record.",
+    (9, 11): "1985 — Pete Rose singled off Eric Show for career hit #4,192, surpassing Ty Cobb's all-time record.",
+    (9, 14): "1968 — Denny McLain won his 30th game of the season — a feat no pitcher has matched since.",
+    (9, 22): "1969 — Willie Mays hit his 600th career home run, joining a very exclusive club.",
+    (9, 28): "1941 — Ted Williams went 6-for-8 on the final day of the season to finish at .406, the last .400 season in MLB history.",
+    (10, 1): "1961 — Roger Maris hit home run #61 on the final day of the season, breaking Babe Ruth's single-season record.",
+    (10, 3): "1951 — Bobby Thomson hit the 'Shot Heard Round the World' to win the pennant for the Giants over Brooklyn.",
+    (10, 8): "1956 — Don Larsen threw the only perfect game in World Series history — Yankees vs. Dodgers, Game 5.",
+    (10,13): "1960 — Bill Mazeroski hit the only walk-off home run to end a World Series, Game 7, for the Pittsburgh Pirates.",
+    (10,15): "1988 — Kirk Gibson hobbled to the plate and hit one of the most famous home runs in history — Dodgers vs. Oakland.",
+    (10,17): "1989 — The Loma Prieta earthquake struck during the World Series, shaking Candlestick Park.",
+    (10,21): "1975 — Carlton Fisk waved his iconic walk-off HR fair in Game 6 of the World Series.",
+    (10,25): "1986 — The ball rolled through Bill Buckner's legs, extending the World Series for the Mets.",
+    (10,27): "2004 — The Boston Red Sox won the World Series, ending the 86-year Curse of the Bambino.",
+    (11, 1): "2001 — Tino Martinez and Scott Brosius hit back-to-back 9th-inning HRs; the Yankees won both in extras.",
+    (11, 4): "2001 — Luis Gonzalez blooped a walk-off single in Game 7 to give Arizona the World Series title over the Yankees.",
+    (11, 7): "1991 — Kirby Puckett homered in extra innings to force a Game 7 in what many call the greatest World Series ever.",
+    (12, 8): "1975 — Free agency officially began in baseball after arbitrator Peter Seitz ruled for Andy Messersmith and Dave McNally.",
+    (12,11): "1937 — Joe DiMaggio signed for $25,000 — a then-record salary for a second-year player.",
+    (12,24): "1974 — Catfish Hunter became baseball's first modern free agent, signing a landmark deal with the Yankees.",
+}
+
 # ── Styled header ─────────────────────────────────────────────────────────────
 import datetime as _dt_hdr
-_hdr_doy   = _dt_hdr.date.today().timetuple().tm_yday
+_hdr_doy      = _dt_hdr.date.today().timetuple().tm_yday
+_hdr_today    = _dt_hdr.date.today()
+_scully_text  = _SCULLY_QUOTES[_hdr_doy % len(_SCULLY_QUOTES)]
+_history_key  = (_hdr_today.month, _hdr_today.day)
+_history_text = _MLB_HISTORY.get(
+    _history_key,
+    "On this date throughout baseball history, countless games have been played, "
+    "records broken, and legends made — proof that every day is a great day for baseball.",
+)
 _sa        = _SPIRIT_ANIMALS[_hdr_doy % len(_SPIRIT_ANIMALS)]
 _sa_emoji  = _sa["emoji"]
 _sa_team   = _sa["team"]
@@ -595,6 +736,31 @@ st.markdown(f"""
   </div>
 </div>
 """, unsafe_allow_html=True)
+
+# ── Vin Scully + MLB History row (always visible above tabs) ──────────────────
+_hdr_c1, _hdr_c2 = st.columns(2)
+_hdr_c1.markdown(
+    f"<div style='background:linear-gradient(135deg,#0F3460,#1565C0);"
+    f"border-radius:12px;padding:14px 18px;height:100%'>"
+    f"<div style='font-size:9px;font-weight:800;color:rgba(255,255,255,0.50);"
+    f"letter-spacing:1.3px;margin-bottom:7px'>VIN SCULLY &nbsp;·&nbsp; DAILY QUOTE</div>"
+    f"<div style='font-size:13px;color:#FFFFFF;font-style:italic;"
+    f"line-height:1.6'>&ldquo;{_scully_text}&rdquo;</div>"
+    f"<div style='font-size:10px;color:rgba(255,255,255,0.40);margin-top:7px'>"
+    f"&mdash; Vin Scully</div></div>",
+    unsafe_allow_html=True,
+)
+_hdr_c2.markdown(
+    f"<div style='background:linear-gradient(135deg,#7C3AED,#4F46E5);"
+    f"border-radius:12px;padding:14px 18px;height:100%'>"
+    f"<div style='font-size:9px;font-weight:800;color:rgba(255,255,255,0.50);"
+    f"letter-spacing:1.3px;margin-bottom:7px'>"
+    f"THIS DAY IN MLB HISTORY &nbsp;·&nbsp; {_hdr_today.strftime('%B %-d')}</div>"
+    f"<div style='font-size:13px;color:#FFFFFF;line-height:1.6'>{_history_text}</div>"
+    f"</div>",
+    unsafe_allow_html=True,
+)
+st.markdown("<div style='margin-bottom:4px'></div>", unsafe_allow_html=True)
 
 # ── Global theme ──────────────────────────────────────────────────────────────
 st.markdown("""
@@ -663,6 +829,42 @@ section[data-testid="stSidebar"] > div {
     border: 1px solid rgba(100,160,255,0.3) !important;
     color: #ffffff !important;
     border-radius: 8px !important;
+}
+
+/* ── Sidebar expanders — keep dark background ── */
+[data-testid="stSidebar"] [data-testid="stExpander"],
+[data-testid="stSidebar"] [data-testid="stExpander"] > div,
+[data-testid="stSidebar"] details,
+[data-testid="stSidebar"] details > div,
+[data-testid="stSidebar"] summary {
+    background: rgba(255,255,255,0.05) !important;
+    border-color: rgba(100,160,255,0.18) !important;
+    color: #BFDBFE !important;
+}
+[data-testid="stSidebar"] details summary {
+    color: #BFDBFE !important;
+    font-weight: 600 !important;
+}
+[data-testid="stSidebar"] [data-testid="stExpander"] p,
+[data-testid="stSidebar"] [data-testid="stExpander"] li,
+[data-testid="stSidebar"] [data-testid="stExpander"] a {
+    color: #BFDBFE !important;
+}
+
+/* ── Sidebar toggles & checkboxes ── */
+[data-testid="stSidebar"] [data-testid="stCheckbox"] span,
+[data-testid="stSidebar"] [data-testid="stToggle"] span {
+    color: #BFDBFE !important;
+}
+
+/* ── Sidebar alerts/info boxes ── */
+[data-testid="stSidebar"] [data-testid="stAlert"] {
+    background: rgba(21,101,192,0.25) !important;
+    border-left-color: #60A5FA !important;
+    color: #BFDBFE !important;
+}
+[data-testid="stSidebar"] [data-testid="stAlert"] p {
+    color: #BFDBFE !important;
 }
 
 /* ── Global text on light background ── */
@@ -1006,26 +1208,44 @@ with st.sidebar:
 
         st.divider()
 
-        # ── Step 2 ────────────────────────────────────────────────────────────
-        st.markdown(
-            "<div style='font-size:12px;font-weight:800;color:#1565C0;"
-            "letter-spacing:0.5px;margin-bottom:6px'>STEP 2 — ESPN LOGIN TOKENS</div>",
-            unsafe_allow_html=True,
-        )
-        st.info(
-            "ESPN requires two login tokens to access your private league. "
-            "You only need to do this once — they don't expire.",
-            icon="🔐",
+        # ── Public vs Private toggle ──────────────────────────────────────────
+        is_public = st.toggle(
+            "🌐 My league is publicly visible on ESPN",
+            value=cfg.get("is_public", False),
+            help="Public leagues don't need login tokens — just your League ID above. "
+                 "To check: go to your ESPN league → Settings → League Visibility.",
         )
 
-        with st.expander("📖 How to find your tokens (step by step)"):
-            _browser = st.selectbox(
-                "Which browser are you using?",
-                ["— Select your browser —", "Chrome", "Edge", "Safari", "Firefox"],
-                key="browser_select",
+        if is_public:
+            st.success(
+                "✅ Public league — no tokens needed! Just enter your League ID and "
+                "Team Number above, then hit Connect.",
+                icon="🎉",
             )
-            _browser_steps = {
-                "Chrome": """
+            espn_s2 = ""
+            swid    = ""
+        else:
+            # ── Step 2 ────────────────────────────────────────────────────────
+            st.markdown(
+                "<div style='font-size:12px;font-weight:800;color:#1565C0;"
+                "letter-spacing:0.5px;margin-bottom:6px'>STEP 2 — ESPN LOGIN TOKENS</div>",
+                unsafe_allow_html=True,
+            )
+            st.info(
+                "ESPN requires two login tokens to access your private league. "
+                "You only need to do this once — they don't expire.",
+                icon="🔐",
+            )
+
+        if not is_public:
+            with st.expander("📖 How to find your tokens (step by step)"):
+                _browser = st.selectbox(
+                    "Which browser are you using?",
+                    ["— Select your browser —", "Chrome", "Edge", "Safari", "Firefox"],
+                    key="browser_select",
+                )
+                _browser_steps = {
+                    "Chrome": """
 1. Go to [fantasy.espn.com](https://fantasy.espn.com) and make sure you're **logged in**
 2. Press **F12** on your keyboard (or right-click anywhere → **Inspect**)
 3. Click the **Application** tab at the top of the panel
@@ -1033,7 +1253,7 @@ with st.sidebar:
 5. Find the row named **espn_s2** — copy the long value
 6. Find the row named **SWID** — copy the value (includes the curly braces `{}`)
 """,
-                "Edge": """
+                    "Edge": """
 1. Go to [fantasy.espn.com](https://fantasy.espn.com) and make sure you're **logged in**
 2. Press **F12** on your keyboard (or right-click anywhere → **Inspect**)
 3. Click the **Application** tab at the top of the panel
@@ -1041,7 +1261,7 @@ with st.sidebar:
 5. Find the row named **espn_s2** — copy the long value
 6. Find the row named **SWID** — copy the value (includes the curly braces `{}`)
 """,
-                "Safari": """
+                    "Safari": """
 1. Go to [fantasy.espn.com](https://fantasy.espn.com) and make sure you're **logged in**
 2. In the top menu bar click **Develop** → **Show Web Inspector**
    *(Don't see Develop? Go to Safari → Settings → Advanced → check "Show Develop menu")*
@@ -1049,7 +1269,7 @@ with st.sidebar:
 4. Find the row named **espn_s2** — copy the long value
 5. Find the row named **SWID** — copy the value (includes the curly braces `{}`)
 """,
-                "Firefox": """
+                    "Firefox": """
 1. Go to [fantasy.espn.com](https://fantasy.espn.com) and make sure you're **logged in**
 2. Press **F12** on your keyboard
 3. Click the **Storage** tab at the top of the panel
@@ -1057,25 +1277,25 @@ with st.sidebar:
 5. Find the row named **espn_s2** — copy the long value
 6. Find the row named **SWID** — copy the value (includes the curly braces `{}`)
 """,
-            }
-            if _browser in _browser_steps:
-                st.markdown(_browser_steps[_browser])
-            elif _browser == "— Select your browser —":
-                st.caption("Select your browser above to see instructions.")
+                }
+                if _browser in _browser_steps:
+                    st.markdown(_browser_steps[_browser])
+                elif _browser == "— Select your browser —":
+                    st.caption("Select your browser above to see instructions.")
 
-        espn_s2 = st.text_input(
-            "ESPN Token  (espn_s2)",
-            type="password",
-            value=cfg.get("espn_s2", ""),
-            placeholder="Starts with AEB...",
-            help="The long token from ESPN's cookies. Starts with 'AEB' and is several hundred characters long.",
-        )
-        swid = st.text_input(
-            "User ID  (SWID)",
-            value=cfg.get("swid", ""),
-            placeholder="{XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX}",
-            help="Include the curly braces { } when you paste this in.",
-        )
+            espn_s2 = st.text_input(
+                "ESPN Token  (espn_s2)",
+                type="password",
+                value=cfg.get("espn_s2", ""),
+                placeholder="Starts with AEB...",
+                help="The long token from ESPN's cookies. Starts with 'AEB' and is several hundred characters long.",
+            )
+            swid = st.text_input(
+                "User ID  (SWID)",
+                value=cfg.get("swid", ""),
+                placeholder="{XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX}",
+                help="Include the curly braces { } when you paste this in.",
+            )
 
         st.divider()
 
@@ -1287,26 +1507,27 @@ def build_prev_stats(league_prev):
 
 # ── Connect ──────────────────────────────────────────────────────────────────
 if connect:
-    if not league_id or not espn_s2 or not swid:
-        st.sidebar.error("Please fill in all fields.")
+    if not league_id:
+        st.sidebar.error("Please enter your League ID.")
+    elif not is_public and (not espn_s2 or not swid):
+        st.sidebar.error("Private leagues require both ESPN tokens. "
+                         "Toggle 'My league is public' if your league is open.")
     else:
         with st.spinner("Connecting to ESPN…"):
             try:
-                league = League(
-                    league_id=int(league_id),
-                    year=int(year),
-                    espn_s2=espn_s2,
-                    swid=swid,
-                )
+                _conn_kwargs = {"league_id": int(league_id), "year": int(year)}
+                if not is_public:
+                    _conn_kwargs["espn_s2"] = espn_s2
+                    _conn_kwargs["swid"]    = swid
+                league = League(**_conn_kwargs)
                 st.session_state.league = league
                 # Load prior season quietly for historical stats
                 try:
-                    league_prev = League(
-                        league_id=int(league_id),
-                        year=int(year) - 1,
-                        espn_s2=espn_s2,
-                        swid=swid,
-                    )
+                    _prev_kwargs = {"league_id": int(league_id), "year": int(year) - 1}
+                    if not is_public:
+                        _prev_kwargs["espn_s2"] = espn_s2
+                        _prev_kwargs["swid"]    = swid
+                    league_prev = League(**_prev_kwargs)
                     st.session_state.league_prev = league_prev
                 except Exception:
                     st.session_state.league_prev = None
@@ -1314,6 +1535,7 @@ if connect:
                     save_config({"league_id": int(league_id), "year": int(year),
                                  "team_id": int(team_id) if team_id else None,
                                  "espn_s2": espn_s2, "swid": swid,
+                                 "is_public": is_public,
                                  "tc_version": _TC_CURRENT_VERSION})
                 st.rerun()
             except Exception as e:
@@ -1333,139 +1555,6 @@ prev_stats = build_prev_stats(league_prev) if league_prev else {}
 fg_proj_type = FG_PROJ_SYSTEMS.get(fg_proj_label, "steamer")
 with st.spinner(f"Loading {fg_proj_label} projections from FanGraphs…"):
     fg = fetch_fg_projections(fg_proj_type)
-
-# ── Vin Scully Daily Quotes ───────────────────────────────────────────────────
-_SCULLY_QUOTES = [
-    "It's time for Dodger baseball!",
-    "Pull up a chair and spend the next three hours with us.",
-    "Hi everybody, and a very pleasant good evening to you, wherever you may be.",
-    "Statistics are used much like a drunk uses a lamppost: for support, not illumination.",
-    "Andre Dawson has a bruised knee and is listed as day-to-day. Aren't we all?",
-    "Baseball is not a sport you can achieve individually.",
-    "In a year that has been so improbable, the impossible has happened.",
-    "It's a great day for a ball game; let's play two!",
-    "The Brooklyn Dodgers have won the World Series — and I don't believe it!",
-    "Sandy Koufax, with a new Dodger record, his 25th victory of the season.",
-    "There are three things you can do in a baseball game: you can win, or you can lose, or it can rain.",
-    "I'd rather have a life I can be proud of than a name people remember.",
-    "Baseball is the theater of the unexpected.",
-    "Good evening, everyone, and a pleasant good evening it is — tonight under the lights.",
-    "The game's the thing, and it's always been the thing.",
-    "Some days you're the Louisville Slugger. Some days you're the ball.",
-    "Once a Dodger, always a Dodger.",
-    "Behind the plate, the heart of the defense — the catcher sees everything.",
-    "Heeee struck him out! And the place is going absolutely wild!",
-    "Two teams on a diamond. Simple as it sounds, there's nothing simple about it.",
-    "Every great hitter works on the theory that the pitcher is more afraid of him than he is of the pitcher.",
-    "The most beautiful thing in the world is a ballpark filled with people.",
-    "He's sitting on a curveball… and he got it!",
-    "Vin Scully, honored to be here — and honored to share it with all of you.",
-    "The bullpen stirs. The crowd murmurs. Something's about to happen.",
-    "I've had a blessed life. Baseball gave me all of it.",
-    "A moment of silence in a ballpark is the loudest thing I've ever heard.",
-    "Nobody goes undefeated all the time. If you can pick up after a crushing defeat, and go on to win again, you are going to be a champion someday.",
-    "The stands are electric, the pitcher winds… this is why we love the game.",
-    "You know, friends, you can talk about your football and your basketball and your hockey — this is baseball. This is ours.",
-    "Pennant fever: there's no cure, and nobody's looking for one.",
-    "Don't be afraid to take an extra base. Fortune favors the bold.",
-    "It's the bottom of the ninth, two out, and the whole season on the line.",
-    "The pitcher has his sign. The catcher crouches. The batter digs in. Baseball.",
-    "Three balls, two strikes. The most beautiful count in sports.",
-    "That ball is… way back… and gone! A home run!",
-    "He winds and fires — strike three, called! And the crowd erupts!",
-    "There's nothing like a sunny afternoon in April when the season is brand new.",
-    "Hit deep to left field… back, back, back — it is GONE! Farewell!",
-    "In all my years behind the microphone, this game still surprises me every night.",
-    "The manager heads to the mound — this is the moment that separates good teams from great teams.",
-    "A ground ball through the left side, and here comes the tying run!",
-    "Every at-bat is a story. Every game is a novel.",
-    "The infield shift defies convention. Baseball always finds a way to keep you honest.",
-    "Line drive, right field — that's a base hit and the runner scores easily!",
-    "He's thrown out at second, but what a play by the center fielder!",
-    "Two on, two out, the cleanup hitter digs in. This is what it's all about.",
-    "They say you can't go home again. Nonsense. Come to a ballpark.",
-    "He checks the runners, he winds, he delivers — and that ball sails into the night.",
-    "And a very pleasant good night to you, wherever you may be.",
-    "Baseball: the game that time forgets, and fathers never do.",
-    "It was a September night in Los Angeles and the pennant was on the line.",
-]
-
-# ── This Day in MLB History ───────────────────────────────────────────────────
-_MLB_HISTORY = {
-    (1,  1): "1876 — The National League was formally organized in New York City, giving birth to Major League Baseball.",
-    (1,  5): "1920 — Babe Ruth was sold by the Red Sox to the Yankees for $100,000 — the most infamous trade in baseball history.",
-    (1, 26): "1939 — Lou Gehrig played in his 2,130th consecutive game just months before his retirement.",
-    (2,  2): "1876 — Albert Spalding published the first official baseball rulebook, standardizing the game nationwide.",
-    (2,  6): "1895 — Babe Ruth was born in Baltimore, Maryland. Happy Birthday, Sultan of Swat.",
-    (2, 10): "1936 — The Baseball Hall of Fame inducted its first five members: Cobb, Wagner, Ruth, Mathewson, and Johnson.",
-    (2, 26): "1934 — Hank Aaron was born in Mobile, Alabama. He would go on to hit 755 career home runs.",
-    (3,  2): "1962 — The New York Mets played their first-ever spring training game.",
-    (3,  5): "1946 — Enos Slaughter signed the first $50,000 contract in Cardinals history.",
-    (3, 16): "1962 — The Houston Colt .45s (later the Astros) played their inaugural spring training contest.",
-    (3, 26): "1953 — The Boston Braves officially became the Milwaukee Braves — the first franchise move in 50 years.",
-    (4,  1): "1973 — Ron Blomberg of the Yankees became baseball's first-ever designated hitter, walking in his debut PA.",
-    (4,  4): "1974 — Hank Aaron hit home run #715, breaking Babe Ruth's all-time record before a national TV audience.",
-    (4,  6): "1973 — The American League used the DH for the first time in regular-season play.",
-    (4,  8): "1974 — Hammerin' Hank Aaron launched #715 off Al Downing. 'What a marvelous moment for baseball.'",
-    (4, 11): "1954 — Hank Aaron played his first MLB game, going 0-for-5 but beginning a legendary 23-year career.",
-    (4, 14): "1910 — President William Howard Taft threw out the first ceremonial first pitch, starting a presidential tradition.",
-    (4, 15): "1947 — Jackie Robinson broke baseball's color barrier, stepping onto Ebbets Field in a Brooklyn Dodgers uniform.",
-    (4, 18): "1923 — Yankee Stadium opened. Babe Ruth christened it with a home run. The New York Times called it 'The House That Ruth Built.'",
-    (4, 22): "1970 — Tom Seaver struck out 19 Padres, including the last 10 in a row — a then-MLB record.",
-    (4, 27): "1983 — Montreal's Steve Rogers threw a complete-game shutout, becoming the 100th pitcher to reach 100 career wins.",
-    (4, 30): "1961 — Willie Mays hit four home runs in a single game against the Milwaukee Braves.",
-    (5,  1): "1991 — Nolan Ryan, age 44, threw his seventh career no-hitter — the most in MLB history.",
-    (5,  5): "1904 — Cy Young threw the first perfect game of the modern era.",
-    (5,  6): "1953 — Bobo Holloman threw a no-hitter in his very first Major League start.",
-    (5,  7): "1959 — Roy Campanella Night at the LA Coliseum drew 93,103 fans — the largest crowd in MLB history.",
-    (5, 10): "1970 — Ernie Banks played his 2,500th career game — all of them in a Cubs uniform.",
-    (5, 15): "1941 — Joe DiMaggio began his legendary 56-game hitting streak.",
-    (5, 17): "1998 — David Wells threw a perfect game for the Yankees vs. the Minnesota Twins.",
-    (5, 24): "1935 — The first-ever MLB night game was played at Crosley Field in Cincinnati under the lights.",
-    (5, 26): "1959 — Harvey Haddix pitched 12 perfect innings for Pittsburgh but lost the game in the 13th — the most heartbreaking near-perfecto ever.",
-    (6,  2): "1941 — Lou Gehrig passed away at age 37, two years after calling himself 'the luckiest man on the face of the earth.'",
-    (6,  3): "1932 — Lou Gehrig hit four home runs in a single game against the Philadelphia Athletics.",
-    (6, 10): "1944 — Joe Nuxhall, age 15, pitched in a game for the Reds — the youngest player in modern MLB history.",
-    (6, 11): "2003 — Roger Clemens earned his 300th career win, also recording his 4,000th strikeout in the same game.",
-    (6, 12): "1939 — The Baseball Hall of Fame officially opened in Cooperstown, New York.",
-    (6, 19): "1846 — The first officially recorded baseball game under Cartwright's rules was played in Hoboken, New Jersey.",
-    (6, 21): "1964 — Jim Bunning of the Phillies threw a perfect game on Father's Day.",
-    (6, 23): "1917 — Babe Ruth was ejected after one pitch; Ernie Shore retired 26 straight batters in one of the most unusual near-perfecftos ever recorded.",
-    (7,  2): "1941 — Joe DiMaggio extended his hitting streak to 45 games, setting a then-American League record.",
-    (7,  4): "1939 — Lou Gehrig delivered his farewell speech at Yankee Stadium. 'Today I consider myself the luckiest man on the face of the earth.'",
-    (7,  6): "1933 — The first All-Star Game was played at Comiskey Park, with Babe Ruth hitting the game's first-ever homer.",
-    (7, 17): "1941 — Joe DiMaggio's 56-game hitting streak ended when Cleveland's pitchers held him hitless.",
-    (7, 24): "1983 — The Pine Tar Incident: George Brett's go-ahead HR was nullified by umpires. He stormed out of the dugout in fury.",
-    (7, 25): "1956 — Robin Roberts won his 200th career game, the first pitcher in NL history to reach that milestone.",
-    (7, 29): "1975 — Henry Aaron collected the 3,000th hit of his career.",
-    (8,  1): "1972 — Roberto Clemente recorded his 3,000th career hit — the last of his life. He died in a plane crash five months later.",
-    (8,  6): "1986 — Roger Clemens struck out 20 batters in a single game, setting an MLB record that still stands.",
-    (8, 12): "1994 — The MLB Players' Strike began, eventually canceling the World Series for the first time since 1904.",
-    (8, 16): "1948 — Babe Ruth passed away at age 53. Sixty thousand fans filed past his casket at Yankee Stadium.",
-    (8, 22): "1851 — The first recorded baseball game between two clubs took place in New York City.",
-    (8, 26): "1939 — The first MLB game was televised — a Reds-Dodgers doubleheader broadcast on W2XBS in New York.",
-    (9,  6): "1995 — Cal Ripken Jr. played in his 2,131st consecutive game, breaking Lou Gehrig's 'unbreakable' record.",
-    (9,  8): "1998 — Mark McGwire hit his 62nd home run, breaking Roger Maris's single-season record.",
-    (9, 11): "1985 — Pete Rose singled off Eric Show for career hit #4,192, surpassing Ty Cobb's all-time record.",
-    (9, 14): "1968 — Denny McLain won his 30th game of the season — a feat no pitcher has matched since.",
-    (9, 22): "1969 — Willie Mays hit his 600th career home run, joining a very exclusive club.",
-    (9, 28): "1941 — Ted Williams went 6-for-8 on the final day of the season to finish at .406, the last .400 season in MLB history.",
-    (10, 1): "1961 — Roger Maris hit home run #61 on the final day of the season, breaking Babe Ruth's single-season record.",
-    (10, 3): "1951 — Bobby Thomson hit the 'Shot Heard 'Round the World' to win the pennant for the Giants over Brooklyn.",
-    (10, 8): "1956 — Don Larsen threw the only perfect game in World Series history — Yankees vs. Dodgers, Game 5.",
-    (10,13): "1960 — Bill Mazeroski hit the only walk-off home run to end a World Series, Game 7, for the Pittsburgh Pirates.",
-    (10,15): "1988 — Kirk Gibson hobbled to the plate and hit one of the most famous home runs in history — Dodgers vs. Oakland.",
-    (10,17): "1989 — The Loma Prieta earthquake struck during the World Series, shaking Candlestick Park and delaying the Series 10 days.",
-    (10,21): "1975 — Carlton Fisk waved his iconic walk-off HR fair in Game 6 of the World Series. One of the greatest moments in baseball history.",
-    (10,25): "1986 — The ball rolled through Bill Buckner's legs, extending the World Series for the Mets. Shea Stadium erupted.",
-    (10,27): "2004 — The Boston Red Sox won the World Series, ending the 86-year 'Curse of the Bambino.'",
-    (11, 1): "2001 — Tino Martinez and Scott Brosius hit back-to-back 9th-inning HRs in successive games; the Yankees won both in extras.",
-    (11, 4): "2001 — Luis Gonzalez blooped a walk-off single in Game 7 to give Arizona the World Series title over the Yankees.",
-    (11, 7): "1991 — Kirby Puckett homered in extra innings to force a Game 7 in what many call the greatest World Series ever.",
-    (12, 8): "1975 — Free agency officially began in baseball after arbitrator Peter Seitz ruled for Andy Messersmith and Dave McNally.",
-    (12,11): "1937 — Joe DiMaggio signed for $25,000 — a then-record salary for a second-year player.",
-    (12,24): "1974 — Catfish Hunter became baseball's first modern free agent, signing a landmark deal with the Yankees.",
-}
 
 # ── Roto Value (replaces fantasy-points for roto leagues) ─────────────────────
 # Anchors: MLB full-season league-average ± 1 SD for each roto category.
@@ -2109,47 +2198,7 @@ with tab0:
         unsafe_allow_html=True,
     )
 
-    # ── Vin Scully Quote (cycles daily by day-of-year) ────────────────────────
-    _scully_idx   = _today.timetuple().tm_yday % len(_SCULLY_QUOTES)
-    _scully_text  = _SCULLY_QUOTES[_scully_idx]
-
-    # ── This Day in MLB History ───────────────────────────────────────────────
-    _history_key  = (_today.month, _today.day)
-    _history_text = _MLB_HISTORY.get(
-        _history_key,
-        f"On this date throughout baseball history, countless games have been played, "
-        f"records broken, and legends made — proof that every day is a great day for baseball.",
-    )
-
-    _qc1, _qc2 = st.columns(2)
-
-    _qc1.markdown(
-        f"""<div style="background:linear-gradient(135deg,#0F3460,#1565C0);
-                border-radius:14px;padding:20px 22px;height:100%">
-          <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.55);
-                      letter-spacing:1.4px;margin-bottom:10px">VIN SCULLY · DAILY QUOTE</div>
-          <div style="font-size:15px;color:#FFFFFF;font-style:italic;line-height:1.6;
-                      margin-bottom:10px">"{_scully_text}"</div>
-          <div style="font-size:11px;color:rgba(255,255,255,0.45)">— Vin Scully</div>
-        </div>""",
-        unsafe_allow_html=True,
-    )
-
-    _qc2.markdown(
-        f"""<div style="background:linear-gradient(135deg,#7C3AED,#4F46E5);
-                border-radius:14px;padding:20px 22px;height:100%">
-          <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.55);
-                      letter-spacing:1.4px;margin-bottom:10px">
-            ⚾ THIS DAY IN MLB HISTORY · {_today.strftime("%B %-d")}
-          </div>
-          <div style="font-size:14px;color:#FFFFFF;line-height:1.6">{_history_text}</div>
-        </div>""",
-        unsafe_allow_html=True,
-    )
-
-    st.divider()
-
-    # ── Skip McGee — Daily GM Take ────────────────────────────────────────────
+    # ── GMoji — Daily GM Take ─────────────────────────────────────────────────
     _GM_QUOTES = {
         "satisfied": [
             "Now THAT'S a roster. You know what my old skipper used to say? 'Win ugly, win pretty — just win.' Right now you're winning pretty.",
@@ -2219,125 +2268,48 @@ with tab0:
     elif _my_season_rank_pre <= 3:
         _gm_context += f" Season rank: <b>#{_my_season_rank_pre} of {_n}</b> — keep it going."
 
-    # Mood-specific avatar CSS
-    _gm_styles = {
-        "satisfied": dict(
-            bg="#F0FDF4", border="#22C55E",
-            hat="#1a3a5c", suit="#1e3a5f",
-            eyebrow_l="transform:rotate(5deg)", eyebrow_r="transform:rotate(-5deg)",
-            eye_h=6, eye_extra="",
-            mouth_style="width:22px;height:11px;border-radius:0 0 22px 22px;"
-                        "border:2px solid #5c3d2e;border-top:none;margin:0 auto",
-            mood_label="😎 Leaning back — loving what he sees",
-        ),
-        "pleased": dict(
-            bg="#FFFBEB", border="#F59E0B",
-            hat="#1a3a5c", suit="#1e3a5f",
-            eyebrow_l="", eyebrow_r="",
-            eye_h=6, eye_extra="",
-            mouth_style="width:16px;height:8px;border-radius:0 0 16px 16px;"
-                        "border:2px solid #5c3d2e;border-top:none;margin:0 auto",
-            mood_label="🙂 Nodding — cautiously optimistic",
-        ),
-        "skeptical": dict(
-            bg="#F8FAFF", border="#94A3B8",
-            hat="#2d2d2d", suit="#374151",
-            eyebrow_l="transform:rotate(-8deg);margin-top:-2px",
-            eyebrow_r="transform:rotate(8deg);margin-top:-2px",
-            eye_h=5, eye_extra="",
-            mouth_style="width:18px;height:3px;background:#5c3d2e;"
-                        "border-radius:2px;margin:0 auto",
-            mood_label="🤔 Arms crossed — not convinced",
-        ),
-        "concerned": dict(
-            bg="#FFFBEB", border="#F59E0B",
-            hat="#2d2d2d", suit="#374151",
-            eyebrow_l="transform:rotate(12deg);transform-origin:right",
-            eyebrow_r="transform:rotate(-12deg);transform-origin:left",
-            eye_h=5, eye_extra="",
-            mouth_style="width:16px;height:8px;border-radius:16px 16px 0 0;"
-                        "border:2px solid #5c3d2e;border-bottom:none;margin:0 auto",
-            mood_label="😟 Pacing — worried about this week",
-        ),
-        "furious": dict(
-            bg="#FFF5F5", border="#EF4444",
-            hat="#1a1a1a", suit="#1a1a1a",
-            eyebrow_l="transform:rotate(20deg);transform-origin:right;margin-top:-3px",
-            eyebrow_r="transform:rotate(-20deg);transform-origin:left;margin-top:-3px",
-            eye_h=4, eye_extra="border-radius:2px",
-            mouth_style="width:20px;height:9px;border-radius:20px 20px 0 0;"
-                        "border:2px solid #5c3d2e;border-bottom:none;margin:0 auto",
-            mood_label="😤 Standing up — not happy at all",
-        ),
+    # Mood-specific display config (emoji avatar + colours)
+    _gm_cfg = {
+        "satisfied": ("😎", "#F0FDF4", "#22C55E", "Leaning back — loving what he sees"),
+        "pleased":   ("🙂", "#FFFBEB", "#F59E0B", "Nodding — cautiously optimistic"),
+        "skeptical": ("🤔", "#F8FAFF", "#94A3B8", "Arms crossed — not convinced"),
+        "concerned": ("😟", "#FFFBEB", "#F59E0B", "Pacing — worried about this week"),
+        "furious":   ("😤", "#FFF5F5", "#EF4444", "Standing up — not happy at all"),
     }
-    _gs = _gm_styles[_gm_mood]
+    _gm_emoji, _gm_bg, _gm_border, _gm_status = _gm_cfg[_gm_mood]
 
-    _context_html = (
-        f"<div style='font-size:11px;color:#64748B;margin-top:10px;"
-        f"padding-top:8px;border-top:1px solid rgba(0,0,0,0.07)'>{_gm_context}</div>"
-    ) if _gm_context else ""
+    # Render as two native Streamlit columns — no complex HTML needed
+    _gm_col_a, _gm_col_b = st.columns([1, 4])
 
-    st.markdown(
-        f"""<div style="background:{_gs['bg']};border:1.5px solid {_gs['border']};
-                border-radius:16px;padding:18px 20px;margin-bottom:4px">
-          <div style="font-size:10px;font-weight:800;color:#64748B;letter-spacing:1.2px;
-                      margin-bottom:12px">⚾ SKIP McGEE'S DAILY TAKE</div>
-          <div style="display:flex;align-items:flex-start;gap:18px">
+    with _gm_col_a:
+        st.markdown(
+            f"<div style='background:{_gm_bg};border:1.5px solid {_gm_border};"
+            f"border-radius:14px;padding:16px 8px;text-align:center;height:100%'>"
+            f"<div style='font-size:52px;line-height:1;margin-bottom:8px'>{_gm_emoji}</div>"
+            f"<div style='font-size:11px;font-weight:800;color:#0F3460'>GMoji</div>"
+            f"<div style='font-size:10px;color:#64748B;font-style:italic;"
+            f"margin-top:3px;line-height:1.3'>{_gm_status}</div>"
+            f"</div>",
+            unsafe_allow_html=True,
+        )
 
-            <!-- Avatar -->
-            <div style="flex-shrink:0;text-align:center;width:72px">
-              <div style="width:64px;height:7px;background:{_gs['hat']};
-                          border-radius:3px;margin:0 auto 0px"></div>
-              <div style="width:48px;height:20px;background:{_gs['hat']};
-                          border-radius:5px 5px 0 0;margin:0 auto"></div>
-              <div style="width:54px;height:52px;background:#FDBCB4;
-                          border-radius:50% 50% 44% 44%;margin:0 auto;
-                          display:flex;flex-direction:column;
-                          align-items:center;justify-content:center;gap:3px">
-                <div style="display:flex;gap:10px">
-                  <div style="width:11px;height:2.5px;background:#5c3d2e;
-                              border-radius:2px;{_gs['eyebrow_l']}"></div>
-                  <div style="width:11px;height:2.5px;background:#5c3d2e;
-                              border-radius:2px;{_gs['eyebrow_r']}"></div>
-                </div>
-                <div style="display:flex;gap:10px">
-                  <div style="width:7px;height:{_gs['eye_h']}px;background:#2c1810;
-                              border-radius:50%;{_gs['eye_extra']}"></div>
-                  <div style="width:7px;height:{_gs['eye_h']}px;background:#2c1810;
-                              border-radius:50%;{_gs['eye_extra']}"></div>
-                </div>
-                <div style="{_gs['mouth_style']}"></div>
-              </div>
-              <div style="width:18px;height:7px;background:#FDBCB4;margin:0 auto"></div>
-              <div style="width:60px;height:32px;background:{_gs['suit']};
-                          border-radius:5px 5px 0 0;margin:0 auto;
-                          display:flex;justify-content:center;padding-top:2px">
-                <div style="width:9px;height:28px;background:#B91C1C;
-                            clip-path:polygon(20% 0%,80% 0%,95% 65%,50% 100%,5% 65%)">
-                </div>
-              </div>
-              <div style="font-size:9px;color:#64748B;margin-top:5px;
-                          font-weight:700;line-height:1.3">Skip McGee<br>
-                <span style="font-weight:400;font-style:italic">{_gs['mood_label']}</span>
-              </div>
-            </div>
-
-            <!-- Speech bubble -->
-            <div style="flex:1;background:white;border-radius:12px;padding:14px 16px;
-                        position:relative;border:1px solid rgba(0,0,0,0.08);
-                        box-shadow:0 2px 8px rgba(0,0,0,0.06)">
-              <div style="position:absolute;left:-9px;top:18px;width:0;height:0;
-                          border-top:9px solid transparent;
-                          border-bottom:9px solid transparent;
-                          border-right:9px solid white"></div>
-              <div style="font-size:14px;color:#0F3460;font-style:italic;
-                          line-height:1.65">&ldquo;{_gm_quote}&rdquo;</div>
-              {_context_html}
-            </div>
-          </div>
-        </div>""",
-        unsafe_allow_html=True,
-    )
+    with _gm_col_b:
+        st.markdown(
+            f"<div style='background:{_gm_bg};border:1.5px solid {_gm_border};"
+            f"border-radius:14px;padding:16px 18px;height:100%'>"
+            f"<div style='font-size:10px;font-weight:800;color:#64748B;"
+            f"letter-spacing:1.2px;margin-bottom:10px'>GMoji — DAILY TAKE</div>"
+            f"<div style='font-size:14px;color:#0F3460;font-style:italic;"
+            f"line-height:1.65'>&ldquo;{_gm_quote}&rdquo;</div>"
+            + (
+                f"<div style='font-size:11px;color:#64748B;margin-top:10px;"
+                f"padding-top:8px;border-top:1px solid rgba(0,0,0,0.08)'>"
+                f"{_gm_context}</div>"
+                if _gm_context else ""
+            )
+            + "</div>",
+            unsafe_allow_html=True,
+        )
 
     st.markdown("<div style='margin-bottom:8px'></div>", unsafe_allow_html=True)
     st.divider()
