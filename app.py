@@ -304,11 +304,11 @@ def render_game_card(event: dict) -> str:
     display_clock = status.get("displayClock", "")
 
     if state == "post":
-        status_badge = ("<span style='background:#22C55E;color:#fff;font-size:10px;font-weight:800;"
-                        "padding:3px 9px;border-radius:20px;letter-spacing:1px'>FINAL</span>")
+        status_badge = ("<span style='background:#22C55E;color:#fff;font-size:11px;font-weight:800;"
+                        "padding:3px 9px;border-radius:20px;letter-spacing:0.8px'>FINAL</span>")
     elif state == "in":
-        status_badge = (f"<span style='background:#EF4444;color:#fff;font-size:10px;font-weight:800;"
-                        f"padding:3px 9px;border-radius:20px;letter-spacing:1px;animation:pulse 1.5s infinite'>"
+        status_badge = (f"<span style='background:#EF4444;color:#fff;font-size:11px;font-weight:800;"
+                        f"padding:3px 9px;border-radius:20px;letter-spacing:0.8px;animation:pulse 1.5s infinite'>"
                         f"🔴 LIVE &nbsp;·&nbsp; {detail}</span>")
     else:
         # Pre-game — show scheduled time
@@ -318,8 +318,8 @@ def render_game_card(event: dict) -> str:
             local_time = dt.astimezone().strftime("%-I:%M %p")
         except Exception:
             local_time = detail or "TBD"
-        status_badge = (f"<span style='background:#94A3B8;color:#fff;font-size:10px;font-weight:700;"
-                        f"padding:3px 9px;border-radius:20px;letter-spacing:0.5px'>{local_time}</span>")
+        status_badge = (f"<span style='background:#94A3B8;color:#fff;font-size:11px;font-weight:700;"
+                        f"padding:3px 9px;border-radius:20px;letter-spacing:0.4px'>{local_time}</span>")
 
     # Scores — bold the winner for final games
     away_score = score(away)
@@ -366,7 +366,7 @@ def render_game_card(event: dict) -> str:
     if away_ls or home_ls:
         innings = max(len(away_ls), len(home_ls), 9)
         header_cells = "".join(
-            f"<th style='min-width:22px;text-align:center;font-size:10px;color:#94A3B8;font-weight:600'>{i+1}</th>"
+            f"<th style='min-width:22px;text-align:center;font-size:11px;color:#94A3B8;font-weight:600'>{i+1}</th>"
             for i in range(innings)
         )
         def ls_cell(ls_list, idx):
@@ -388,7 +388,7 @@ def render_game_card(event: dict) -> str:
         ar, ah, ae = rhe(away)
         hr2, hh, he = rhe(home)
 
-        rhe_header = "".join(f"<th style='min-width:26px;text-align:center;font-size:10px;color:#94A3B8;font-weight:700;padding-left:8px'>{x}</th>" for x in ["R","H","E"])
+        rhe_header = "".join(f"<th style='min-width:26px;text-align:center;font-size:11px;color:#94A3B8;font-weight:700;padding-left:8px'>{x}</th>" for x in ["R","H","E"])
         away_rhe = "".join(f"<td style='text-align:center;font-size:11px;font-weight:700;color:#0F3460;padding-left:8px'>{v}</td>" for v in [ar, ah, ae])
         home_rhe = "".join(f"<td style='text-align:center;font-size:11px;font-weight:700;color:#0F3460;padding-left:8px'>{v}</td>" for v in [hr2, hh, he])
 
@@ -400,7 +400,7 @@ def render_game_card(event: dict) -> str:
 <table style='border-collapse:collapse;width:100%;min-width:300px'>
   <thead>
     <tr>
-      <th style='text-align:left;font-size:10px;color:#94A3B8;font-weight:600;min-width:36px'></th>
+      <th style='text-align:left;font-size:11px;color:#94A3B8;font-weight:600;min-width:36px'></th>
       {header_cells}
       {div_cell}
       {rhe_header}
@@ -446,7 +446,7 @@ def render_game_card(event: dict) -> str:
 
     # Venue
     venue = comp.get("venue", {}).get("fullName", "")
-    venue_html = (f"<div style='font-size:10px;color:#94A3B8;margin-top:4px'>📍 {venue}</div>"
+    venue_html = (f"<div style='font-size:11px;color:#94A3B8;margin-top:4px'>📍 {venue}</div>"
                   if venue else "")
 
     # Away record / home record
@@ -467,7 +467,7 @@ def render_game_card(event: dict) -> str:
     <div style="display:flex;flex-direction:column;align-items:center;gap:4px;min-width:64px">
       {away_logo}
       <div style="font-size:12px;font-weight:800;color:#334155;letter-spacing:0.5px">{team_name(away)}</div>
-      <div style="font-size:10px;color:#94A3B8">{away_rec}</div>
+      <div style="font-size:11px;color:#94A3B8">{away_rec}</div>
     </div>
     <!-- Scores -->
     <div style="display:flex;align-items:center;gap:16px">
@@ -479,7 +479,7 @@ def render_game_card(event: dict) -> str:
     <div style="display:flex;flex-direction:column;align-items:center;gap:4px;min-width:64px">
       {home_logo}
       <div style="font-size:12px;font-weight:800;color:#334155;letter-spacing:0.5px">{team_name(home)}</div>
-      <div style="font-size:10px;color:#94A3B8">{home_rec}</div>
+      <div style="font-size:11px;color:#94A3B8">{home_rec}</div>
     </div>
   </div>
   {linescores_html}
@@ -742,21 +742,21 @@ _hdr_c1, _hdr_c2 = st.columns(2)
 _hdr_c1.markdown(
     f"<div style='background:linear-gradient(135deg,#0F3460,#1565C0);"
     f"border-radius:12px;padding:14px 18px;height:100%'>"
-    f"<div style='font-size:9px;font-weight:800;color:rgba(255,255,255,0.50);"
+    f"<div style='font-size:11px;font-weight:800;color:rgba(255,255,255,0.60);"
     f"letter-spacing:1.3px;margin-bottom:7px'>VIN SCULLY &nbsp;·&nbsp; DAILY QUOTE</div>"
-    f"<div style='font-size:13px;color:#FFFFFF;font-style:italic;"
-    f"line-height:1.6'>&ldquo;{_scully_text}&rdquo;</div>"
-    f"<div style='font-size:10px;color:rgba(255,255,255,0.40);margin-top:7px'>"
+    f"<div style='font-size:14px;color:#FFFFFF;font-style:italic;"
+    f"line-height:1.65'>&ldquo;{_scully_text}&rdquo;</div>"
+    f"<div style='font-size:12px;color:rgba(255,255,255,0.50);margin-top:7px'>"
     f"&mdash; Vin Scully</div></div>",
     unsafe_allow_html=True,
 )
 _hdr_c2.markdown(
     f"<div style='background:linear-gradient(135deg,#7C3AED,#4F46E5);"
     f"border-radius:12px;padding:14px 18px;height:100%'>"
-    f"<div style='font-size:9px;font-weight:800;color:rgba(255,255,255,0.50);"
+    f"<div style='font-size:11px;font-weight:800;color:rgba(255,255,255,0.60);"
     f"letter-spacing:1.3px;margin-bottom:7px'>"
     f"THIS DAY IN MLB HISTORY &nbsp;·&nbsp; {_hdr_today.strftime('%B %-d')}</div>"
-    f"<div style='font-size:13px;color:#FFFFFF;line-height:1.6'>{_history_text}</div>"
+    f"<div style='font-size:14px;color:#FFFFFF;line-height:1.65'>{_history_text}</div>"
     f"</div>",
     unsafe_allow_html=True,
 )
@@ -867,13 +867,46 @@ section[data-testid="stSidebar"] > div {
     color: #BFDBFE !important;
 }
 
-/* ── Global text on light background ── */
+/* ── Global typography foundation ── */
+html, body, [data-testid="stAppViewContainer"], .main {
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI',
+                 Roboto, Helvetica, Arial, sans-serif !important;
+    font-size: 15px !important;
+    line-height: 1.65 !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+    text-rendering: optimizeLegibility !important;
+}
+
+/* ── Headings ── */
 h1, h2, h3, h4 { color: #0D2550 !important; }
-h1 { font-size: 1.7rem !important; font-weight: 800 !important; letter-spacing: -0.4px; }
-h2 { font-size: 1.25rem !important; font-weight: 700 !important; }
-h3 { font-size: 1.05rem !important; font-weight: 600 !important; }
-p, label, .stMarkdown { color: #1E3A5F !important; }
-.stCaption, [data-testid="stCaptionContainer"] { color: #64748B !important; }
+h1 { font-size: 1.75rem !important; font-weight: 800 !important; letter-spacing: -0.5px; line-height: 1.25 !important; }
+h2 { font-size: 1.30rem !important; font-weight: 700 !important; letter-spacing: -0.3px; line-height: 1.3 !important; }
+h3 { font-size: 1.10rem !important; font-weight: 600 !important; line-height: 1.4 !important; }
+
+/* ── Body text ── */
+p, li { color: #1E3A5F !important; font-size: 15px !important; line-height: 1.65 !important; }
+label { color: #1E3A5F !important; font-size: 14px !important; font-weight: 500 !important; }
+.stMarkdown { color: #1E3A5F !important; }
+
+/* ── Captions — slightly darker for better contrast ── */
+.stCaption, [data-testid="stCaptionContainer"],
+[data-testid="stCaptionContainer"] p {
+    color: #475569 !important;
+    font-size: 13px !important;
+    line-height: 1.55 !important;
+}
+
+/* ── Sidebar typography ── */
+[data-testid="stSidebar"] p,
+[data-testid="stSidebar"] li { font-size: 14px !important; line-height: 1.6 !important; }
+[data-testid="stSidebar"] label { font-size: 13.5px !important; font-weight: 600 !important; }
+
+/* ── Info / warning / error alerts ── */
+[data-testid="stAlert"] p { font-size: 14px !important; line-height: 1.6 !important; }
+
+/* ── Dataframe text ── */
+[data-testid="stDataFrame"] { font-size: 14px !important; }
 
 /* ── Metric cards ── */
 [data-testid="stMetric"] {
@@ -1044,14 +1077,16 @@ hr { border-color: rgba(148,163,184,0.25) !important; }
     margin-bottom: 14px;
     margin-top: 6px;
 }
-.sec-head-icon { font-size: 20px; line-height: 1; }
+.sec-head-icon { font-size: 22px; line-height: 1; }
 .sec-head-title {
-    font-size: 14.5px; font-weight: 800;
-    color: #0F3460; letter-spacing: -0.2px;
+    font-size: 15.5px; font-weight: 800;
+    color: #0F3460; letter-spacing: -0.3px;
+    line-height: 1.3;
 }
 .sec-head-sub {
-    font-size: 11.5px; color: #64748B;
-    margin-top: 1px; font-weight: 400;
+    font-size: 13px; color: #475569;
+    margin-top: 2px; font-weight: 400;
+    line-height: 1.4;
 }
 
 /* ── Streak player rows ── */
@@ -1063,10 +1098,10 @@ hr { border-color: rgba(148,163,184,0.25) !important; }
 }
 .pos-badge {
     display: inline-block;
-    font-size: 10px; font-weight: 700;
-    padding: 2px 7px; border-radius: 20px;
+    font-size: 11px; font-weight: 700;
+    padding: 2px 8px; border-radius: 20px;
     background: rgba(21,101,192,0.12);
-    color: #1565C0; letter-spacing: 0.3px;
+    color: #1565C0; letter-spacing: 0.2px;
     margin-left: 5px; vertical-align: middle;
 }
 .trend-up   { color: #DC2626; font-weight: 800; font-size: 14px; }
@@ -1088,6 +1123,50 @@ hr { border-color: rgba(148,163,184,0.25) !important; }
 }
 .empty-state .es-icon { font-size: 32px; margin-bottom: 8px; }
 .empty-state .es-msg  { font-weight: 600; color: #64748B; }
+
+/* ── Mobile responsive (≤768px) ── */
+@media (max-width: 768px) {
+    /* Tighten main padding */
+    .main .block-container {
+        padding: 0.75rem 0.75rem 2rem !important;
+    }
+    /* Tab pills — smaller text, tighter padding */
+    [data-testid="stTabs"] button {
+        font-size: 11px !important;
+        padding: 6px 10px !important;
+    }
+    /* Section headers — slightly smaller */
+    .sec-head { padding: 9px 12px !important; }
+    .sec-head-title { font-size: 13px !important; }
+    /* Weather forecast cards — stack vertically */
+    [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {
+        min-width: 100% !important;
+    }
+    /* Category tiles — 2 across instead of 5 */
+    [data-testid="stColumns"] [data-testid="stColumn"] {
+        min-width: 48% !important;
+        flex: 0 0 48% !important;
+    }
+    /* Reduce banner font sizes */
+    .cc-banner-title { font-size: 20px !important; }
+    /* Streak cards — single column */
+    .streak-card { font-size: 12px !important; }
+    /* Situation cards — reduce padding */
+    div[style*="border-radius:14px"] {
+        padding: 12px 14px !important;
+    }
+}
+
+/* ── Tablet responsive (769px–1024px) ── */
+@media (min-width: 769px) and (max-width: 1024px) {
+    [data-testid="stTabs"] button {
+        font-size: 12px !important;
+        padding: 7px 14px !important;
+    }
+    .main .block-container {
+        padding: 1rem 1.5rem 2rem !important;
+    }
+}
 
 </style>
 """, unsafe_allow_html=True)
@@ -1384,6 +1463,30 @@ with st.sidebar:
         unsafe_allow_html=True,
     )
 
+    st.divider()
+
+    # ── Manager Mode ──────────────────────────────────────────────────────────
+    st.markdown(
+        "<div style='font-size:12px;font-weight:800;color:#60A5FA;"
+        "letter-spacing:0.5px;margin-bottom:6px'>⚙️ DISPLAY MODE</div>",
+        unsafe_allow_html=True,
+    )
+    _full_mode_toggle = st.toggle(
+        "🔬 Obsessive Mode",
+        value=st.session_state.get("_full_mode", False),
+        help="OFF = key insights only (passive manager). "
+             "ON = all data tables and deep analysis visible (obsessive manager).",
+        key="_full_mode_toggle",
+    )
+    st.session_state["_full_mode"] = _full_mode_toggle
+    st.markdown(
+        "<div style='font-size:11px;color:#64748B;margin-top:2px'>"
+        + ("📊 Showing all tables & deep analysis" if _full_mode_toggle
+           else "✨ Showing key insights only")
+        + "</div>",
+        unsafe_allow_html=True,
+    )
+
     # ── Terms & Conditions (sidebar bottom) ──────────────────────────────────
     st.markdown("<div style='margin-top:24px'></div>", unsafe_allow_html=True)
     with st.expander("📋 Terms & Conditions"):
@@ -1475,7 +1578,13 @@ if st.session_state.league is None and _auto_creds:
             except Exception:
                 st.session_state.league_prev = None
         except Exception as e:
-            st.sidebar.error(f"Auto-connect failed: {e}")
+            _err = str(e).lower()
+            if "private" in _err or "401" in _err or "authentication" in _err:
+                st.sidebar.error("🔐 Your ESPN tokens may have expired. Re-enter your espn_s2 and SWID in the settings above.")
+            elif "404" in _err or "not found" in _err:
+                st.sidebar.error("🔍 League not found. Double-check your League ID and Season Year.")
+            else:
+                st.sidebar.error("⚠️ Couldn't connect to ESPN. Check your credentials and try again.")
 
 # ── 2025 stats helpers ────────────────────────────────────────────────────────
 BATTER_STATS  = ["HR", "RBI", "R", "SB", "AVG", "OPS"]
@@ -1539,10 +1648,21 @@ if connect:
                                  "tc_version": _TC_CURRENT_VERSION})
                 st.rerun()
             except Exception as e:
-                st.sidebar.error(f"Connection failed: {e}")
+                _err = str(e).lower()
+                if "private" in _err or "401" in _err or "authentication" in _err:
+                    st.sidebar.error("🔐 Authentication failed — your espn_s2 or SWID is incorrect or expired. Re-copy them from your browser cookies.")
+                elif "404" in _err or "not found" in _err:
+                    st.sidebar.error("🔍 League not found — double-check your League ID and confirm the Season Year is correct.")
+                elif "timeout" in _err or "connection" in _err:
+                    st.sidebar.error("🌐 Connection timed out — ESPN may be slow right now. Wait a moment and try again.")
+                else:
+                    st.sidebar.error(f"⚠️ Couldn't connect. Make sure your League ID, Year, and tokens are all correct. (Detail: {str(e)[:80]})")
 
 league = st.session_state.league
 league_prev = st.session_state.league_prev
+
+# Manager mode — True = show all tables (obsessive), False = key insights only (passive)
+_full_mode = st.session_state.get("_full_mode", False)
 
 if league is None:
     st.info("Enter your ESPN league credentials in the sidebar to get started.")
@@ -1923,7 +2043,11 @@ def heat_label(score: int) -> str:
     if score >= 3:  return f"❄️ {score}"
     return              f"🧊 {score}"
 
-HEAT_CFG = st.column_config.TextColumn("🌡️ Heat", width="small")
+HEAT_CFG = st.column_config.TextColumn(
+    "🌡️ Heat", width="small",
+    help="Recent performance heat score: 🔥🔥 On fire · 🔥 Hot · ➡️ Steady · 🧊 Cool · ❄️ Cold. "
+         "Based on stats over the last 2 weeks vs season average.",
+)
 
 # How far into current season? Use for blending weight
 current_period = getattr(league, "currentMatchupPeriod", 1) or 1
@@ -2024,6 +2148,47 @@ def _section_header(icon: str, title: str, subtitle: str = "") -> None:
         unsafe_allow_html=True,
     )
 
+def _situation_card(icon: str, headline: str, details: list[str],
+                    status: str = "neutral") -> None:
+    """Render an at-a-glance situation card at the top of a tab.
+    status: 'good' | 'warning' | 'bad' | 'neutral'
+    details: list of short strings shown as pills below the headline.
+    """
+    _colors = {
+        "good":    ("linear-gradient(135deg,#F0FDF4,#DCFCE7)", "#15803D", "#BBF7D0"),
+        "warning": ("linear-gradient(135deg,#FFFBEB,#FEF3C7)", "#92400E", "#FDE68A"),
+        "bad":     ("linear-gradient(135deg,#FFF5F5,#FEE2E2)", "#B91C1C", "#FECACA"),
+        "neutral": ("linear-gradient(135deg,#F0F7FF,#E8F2FF)", "#1565C0", "#BFDBFE"),
+    }
+    bg, txt, pill = _colors.get(status, _colors["neutral"])
+    pills_html = "".join(
+        f"<span style='background:{pill};color:{txt};font-size:13px;font-weight:600;"
+        f"padding:4px 12px;border-radius:20px;margin-right:6px;white-space:nowrap;"
+        f"line-height:1.4'>"
+        f"{d}</span>"
+        for d in details
+    )
+    st.markdown(
+        f"<div style='background:{bg};border-radius:14px;padding:18px 22px;"
+        f"margin-bottom:18px;border:1px solid rgba(0,0,0,0.06)'>"
+        f"<div style='font-size:19px;font-weight:800;color:{txt};margin-bottom:12px;"
+        f"line-height:1.3'>"
+        f"{icon} {headline}</div>"
+        f"<div style='display:flex;flex-wrap:wrap;gap:8px'>{pills_html}</div>"
+        f"</div>",
+        unsafe_allow_html=True,
+    )
+
+def _freshness_badge(ttl_desc: str, icon: str = "🕐") -> None:
+    """Show a subtle 'data freshness' line under a section header."""
+    now = datetime.now().strftime("%-I:%M %p")
+    st.markdown(
+        f"<div style='font-size:12.5px;color:#64748B;margin:-8px 0 12px;"
+        f"line-height:1.5'>"
+        f"{icon} {ttl_desc} · Page loaded at {now}</div>",
+        unsafe_allow_html=True,
+    )
+
 def _empty_state(icon: str, message: str, hint: str = "") -> None:
     """Render a friendly empty-state card (inline styles only)."""
     hint_html = (
@@ -2040,17 +2205,19 @@ def _empty_state(icon: str, message: str, hint: str = "") -> None:
     )
 
 # ── Tabs ──────────────────────────────────────────────────────────────────────
-tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs([
-    "🏢 Front Office",
-    "📋 Lineup Optimizer",
-    "🔍 Waiver Wire",
-    "📊 Team Overview",
-    "🔄 Trade Analyzer",
-    "🪑 Start / Sit",
-    "🌊 Streaming Pitchers",
-    "📰 Player News",
-    "⚾ Games",
-    "🎯 Roto Tools",
+# Tab variables keep their original names so all `with tabN:` blocks need no changes.
+# The visual order is controlled by the list order below.
+tab0, tab5, tab2, tab6, tab1, tab3, tab4, tab7, tab8, tab9 = st.tabs([
+    "🏢 Front Office",       # tab0 — daily driver
+    "🪑 Start / Sit",        # tab5 — daily pre-game decisions
+    "🔍 Waiver Wire",        # tab2 — frequent pickups
+    "🌊 Streaming Pitchers", # tab6 — weekly streaming
+    "📋 Lineup Optimizer",   # tab1 — weekly review
+    "📊 Team Overview",      # tab3 — weekly standing check
+    "🔄 Trade Analyzer",     # tab4 — occasional
+    "📰 Player News",        # tab7 — browse anytime
+    "⚾ Games",               # tab8 — browse anytime
+    "🎯 Roto Tools",         # tab9 — deep dives
 ])
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -2286,9 +2453,9 @@ with tab0:
             f"<div style='background:{_gm_bg};border:1.5px solid {_gm_border};"
             f"border-radius:14px;padding:16px 8px;text-align:center;height:100%'>"
             f"<div style='font-size:52px;line-height:1;margin-bottom:8px'>{_gm_emoji}</div>"
-            f"<div style='font-size:11px;font-weight:800;color:#0F3460'>GMoji</div>"
-            f"<div style='font-size:10px;color:#64748B;font-style:italic;"
-            f"margin-top:3px;line-height:1.3'>{_gm_status}</div>"
+            f"<div style='font-size:12px;font-weight:800;color:#0F3460'>GMoji</div>"
+            f"<div style='font-size:12px;color:#64748B;font-style:italic;"
+            f"margin-top:3px;line-height:1.4'>{_gm_status}</div>"
             f"</div>",
             unsafe_allow_html=True,
         )
@@ -2297,8 +2464,8 @@ with tab0:
         st.markdown(
             f"<div style='background:{_gm_bg};border:1.5px solid {_gm_border};"
             f"border-radius:14px;padding:16px 18px;height:100%'>"
-            f"<div style='font-size:10px;font-weight:800;color:#64748B;"
-            f"letter-spacing:1.2px;margin-bottom:10px'>GMoji — DAILY TAKE</div>"
+            f"<div style='font-size:12px;font-weight:800;color:#64748B;"
+            f"letter-spacing:1.0px;margin-bottom:10px'>GMoji — DAILY TAKE</div>"
             f"<div style='font-size:14px;color:#0F3460;font-style:italic;"
             f"line-height:1.65'>&ldquo;{_gm_quote}&rdquo;</div>"
             + (
@@ -2365,7 +2532,8 @@ with tab0:
                     "a single good pickup or hot day could swing these."
                 )
         else:
-            st.info("No matchup data available yet for this week.")
+            _empty_state("📅", "No matchup data yet",
+                     "ESPN posts weekly matchups at the start of each scoring period. Check back Monday.")
 
         # ── A2. Roster Alerts ─────────────────────────────────────────────────────
         _section_header("🚨", "Roster Alerts", "Injuries, dead weight, and players needing attention")
@@ -2519,7 +2687,8 @@ with tab0:
             _fa_two_start.sort(key=lambda x: fg_roto_value_by_name(x[0]), reverse=True)
 
             if not _fa_two_start:
-                st.info("No two-start FA pitchers identified yet — ESPN confirms probable starters a few days out.")
+                _empty_state("📅", "No two-start pitchers confirmed yet",
+                     "ESPN posts probable starters a few days before game time. Check back Wednesday–Thursday for weekend series.")
             else:
                 _ts_rows = []
                 for _nm, _info in _fa_two_start[:6]:
@@ -2572,7 +2741,7 @@ with tab0:
                 _era_clr = ("#B91C1C" if isinstance(_era, (int, float)) and float(_era) > 4.50
                             else "#15803D")
                 _risk_html = (
-                    f"<div style='font-size:10px;color:#B91C1C;margin-top:5px'>{_risk}</div>"
+                    f"<div style='font-size:12px;color:#B91C1C;margin-top:5px'>{_risk}</div>"
                 ) if _risk else ""
                 with _ts_cols[_ci % 4]:
                     # Render headshot separately so Streamlit handles the image safely
@@ -2690,9 +2859,9 @@ with tab0:
                         f"<span style='color:{arr_clr};font-weight:800;font-size:14px'>{arrow}</span>"
                         f"<div style='flex:1'>"
                         f"<b style='font-size:13px'>{row['Player']}</b>"
-                        f"<span style='display:inline-block;font-size:10px;font-weight:700;"
-                        f"padding:2px 7px;border-radius:20px;background:rgba(21,101,192,0.12);"
-                        f"color:#1565C0;letter-spacing:0.3px;margin-left:5px;"
+                        f"<span style='display:inline-block;font-size:11px;font-weight:700;"
+                        f"padding:2px 8px;border-radius:20px;background:rgba(21,101,192,0.12);"
+                        f"color:#1565C0;letter-spacing:0.2px;margin-left:5px;"
                         f"vertical-align:middle'>{row['Pos']}</span>"
                         f"</div>"
                         f"<b style='color:{pace_clr};font-size:13px'>{row['Pace']}</b>"
@@ -2834,8 +3003,8 @@ with tab0:
         _todo_html = (
             "<div style='background:linear-gradient(135deg,#0F3460,#1565C0);"
             "border-radius:14px;padding:18px 22px;margin-bottom:6px'>"
-            "<div style='font-size:10px;font-weight:800;color:rgba(255,255,255,0.55);"
-            "letter-spacing:1.3px;margin-bottom:14px'>📋 TODAY'S GM CHECKLIST</div>"
+            "<div style='font-size:12px;font-weight:800;color:rgba(255,255,255,0.70);"
+            "letter-spacing:1.0px;margin-bottom:14px'>📋 TODAY'S GM CHECKLIST</div>"
         )
         _section_map = {
             _HIGH: ("rgba(254,226,226,0.90)", "#EF4444"),
@@ -2847,8 +3016,8 @@ with tab0:
             if _pri != _prev_pri:
                 _label = {"high": "🔴 URGENT", "med": "🟡 TODAY", "low": "🟢 THIS WEEK"}[_pri]
                 _todo_html += (
-                    f"<div style='font-size:10px;font-weight:800;"
-                    f"color:rgba(255,255,255,0.45);letter-spacing:1px;"
+                    f"<div style='font-size:12px;font-weight:800;"
+                    f"color:rgba(255,255,255,0.60);letter-spacing:0.8px;"
                     f"margin:{'12px' if _prev_pri else '0'} 0 6px 0'>{_label}</div>"
                 )
                 _prev_pri = _pri
@@ -2937,8 +3106,8 @@ with tab0:
                 f"<div style='text-align:center;background:{_card_bg};"
                 f"border:1px solid rgba(0,0,0,0.06);border-radius:12px;"
                 f"padding:12px 6px 10px;margin:2px'>"
-                f"<div style='font-size:10px;color:#64748B;font-weight:800;"
-                f"letter-spacing:0.8px;text-transform:uppercase'>{_cat}</div>"
+                f"<div style='font-size:11px;color:#64748B;font-weight:800;"
+                f"letter-spacing:0.6px;text-transform:uppercase'>{_cat}</div>"
                 f"<div style='font-size:20px;font-weight:900;color:#0F3460;"
                 f"margin:5px 0 2px;line-height:1'>{_val_fmt}</div>"
                 f"<div style='font-size:13px;font-weight:800;color:{_rank_lbl_clr};"
@@ -3490,17 +3659,34 @@ with tab1:
                 }
             )
 
+        # ── Situation Card ────────────────────────────────────────────────────
+        _t1_injured  = [r for r in rows if r["Status"] in ("INJURY_RESERVE","OUT","DOUBTFUL")]
+        _t1_best_h   = hitters_df.iloc[0]["Player"]  if not hitters_df.empty  else "—"
+        _t1_best_p   = pitchers_df.iloc[0]["Player"] if not pitchers_df.empty else "—"
+        _t1_h_rv     = round(hitters_df.iloc[0][proj_col], 1)  if not hitters_df.empty  else 0
+        _t1_p_rv     = round(pitchers_df.iloc[0][proj_col], 1) if not pitchers_df.empty else 0
+        _t1_status   = "bad" if len(_t1_injured) >= 3 else "warning" if _t1_injured else "good"
+        _t1_headline = (f"{len(_t1_injured)} health alert{'s' if len(_t1_injured)!=1 else ''} on your roster"
+                        if _t1_injured else "Roster looks healthy ✓")
+        _situation_card("📋", _t1_headline, [
+            f"Best hitter: {_t1_best_h} ({_t1_h_rv:+.1f} roto)",
+            f"Best pitcher: {_t1_best_p} ({_t1_p_rv:+.1f} roto)",
+            f"{len(hitters_df)} hitters · {len(pitchers_df)} pitchers",
+        ], _t1_status)
+
         st.subheader("⚾ Hitters")
         if hitters_df.empty:
             st.info("No hitters on roster.")
         else:
-            roster_section(hitters_df, _BAT_COLS)
+            with st.expander(f"View all {len(hitters_df)} hitters", expanded=_full_mode):
+                roster_section(hitters_df, _BAT_COLS)
 
         st.subheader("🎯 Pitchers")
         if pitchers_df.empty:
             st.info("No pitchers on roster.")
         else:
-            roster_section(pitchers_df, _PIT_COLS)
+            with st.expander(f"View all {len(pitchers_df)} pitchers", expanded=_full_mode):
+                roster_section(pitchers_df, _PIT_COLS)
 
         # Simple slot-filling suggestion
         st.subheader("Suggested Lineup")
@@ -3555,7 +3741,7 @@ with tab1:
             for name, war in my_war_map.items()
         ]
         # Free agents only, with WAR > my minimum
-        with st.spinner("Loading free agents for WAR comparison…"):
+        with st.spinner("Loading free agents — comparing WAR against your roster…"):
             try:
                 war_fa = league.free_agents(size=200)
             except Exception:
@@ -3609,6 +3795,7 @@ with tab1:
 with tab2:
     st.header("Waiver Wire Analyzer")
     st.caption("Top available free agents ranked by **roto value** (sum of FanGraphs category z-scores). Higher = more categories contributed.")
+    _freshness_badge("Projections update daily · FA pool refreshes on page load", "📡")
 
     col1, col2 = st.columns([1, 3])
     with col1:
@@ -3618,7 +3805,7 @@ with tab2:
         )
         top_n = st.slider("Show top N players", 10, 100, 30)
 
-    with st.spinner("Loading free agents…"):
+    with st.spinner("Fetching free agents and ranking by roto value…"):
         try:
             if pos_filter == "All":
                 fa = league.free_agents(size=top_n * 2)
@@ -3654,23 +3841,33 @@ with tab2:
             if fa_df.empty:
                 st.info("No free agents found for the selected filter.")
             else:
-                st.dataframe(
-                    apply_grade_colors(grey_na_stats(apply_badges(fa_df))),
-                    use_container_width=True, hide_index=True,
-                    column_config={
-                        "Player":    st.column_config.TextColumn("Player", width="medium"),
-                        "Position":  st.column_config.TextColumn("Pos", width="small"),
-                        "Pro Team":  st.column_config.TextColumn("Team", width="small"),
-                        fa_proj_col: roto_cfg("Roto Val"),
-                        "Helps":     st.column_config.TextColumn("Helps", width="small",
-                                         help="Categories where this player is above average"),
-                        "WAR":       war_cfg(),
-                        **GRADE_COL_CFG,
-                        **STAT_COL_CFG,
-                        "🌡️ Heat":   HEAT_CFG,
-                        "Status":    st.column_config.TextColumn("Health", width="small"),
-                    }
-                )
+                # ── Situation Card ────────────────────────────────────────────
+                _t2_best    = fa_df.iloc[0]
+                _t2_helps   = _t2_best.get("Helps", "—")
+                _situation_card("🔍", f"Top available: {_t2_best['Player']}", [
+                    f"Roto Value: {_t2_best[fa_proj_col]:+.1f}",
+                    f"Helps: {_t2_helps}" if _t2_helps else "General depth",
+                    f"{len(fa_df)} FAs loaded",
+                ], "neutral")
+
+                with st.expander(f"View all {len(fa_df)} free agents", expanded=_full_mode):
+                    st.dataframe(
+                        apply_grade_colors(grey_na_stats(apply_badges(fa_df))),
+                        use_container_width=True, hide_index=True,
+                        column_config={
+                            "Player":    st.column_config.TextColumn("Player", width="medium"),
+                            "Position":  st.column_config.TextColumn("Pos", width="small"),
+                            "Pro Team":  st.column_config.TextColumn("Team", width="small"),
+                            fa_proj_col: roto_cfg("Roto Val"),
+                            "Helps":     st.column_config.TextColumn("Helps", width="small",
+                                             help="Categories where this player is above average"),
+                            "WAR":       war_cfg(),
+                            **GRADE_COL_CFG,
+                            **STAT_COL_CFG,
+                            "🌡️ Heat":   HEAT_CFG,
+                            "Status":    st.column_config.TextColumn("Health", width="small"),
+                        }
+                    )
 
                 # ── Roto Upgrade Suggestions ──────────────────────────────────
                 st.subheader("📈 Roto Upgrade Targets")
@@ -3742,7 +3939,7 @@ with tab2:
                     st.success("Your roster is already stronger than available free agents at every position!")
 
         except Exception as e:
-            st.error(f"Could not load free agents: {e}")
+            st.error("⚠️ Couldn't load free agents right now — ESPN may be slow or your session expired. Try refreshing the page.")
 
 # ─────────────────────────────────────────────────────────────────────────────
 # TAB 3: TEAM OVERVIEW
@@ -3764,10 +3961,31 @@ with tab3:
 
     my_pts_for, my_pts_against = calc_points(my_team)
 
+    _t3_record_str = f"{my_team.wins}–{my_team.losses}" + (f"–{my_team.ties}" if my_team.ties else "")
+    _t3_win_pct    = round(my_team.wins / max(my_team.wins + my_team.losses, 1) * 100)
+    _t3_pf_color   = "#15803D" if my_pts_for >= my_pts_against else "#B91C1C"
     col1, col2, col3 = st.columns(3)
-    col1.metric("Record", f"{my_team.wins}-{my_team.losses}" + (f"-{my_team.ties}" if my_team.ties else ""))
-    col2.metric("Roto Pts For", round(my_pts_for, 1))
-    col3.metric("Roto Pts Against", round(my_pts_against, 1))
+    col1.markdown(
+        f"<div style='background:linear-gradient(135deg,#F0F7FF,#E8F2FF);border:1px solid rgba(21,101,192,0.15);"
+        f"border-radius:14px;padding:16px 20px;text-align:center'>"
+        f"<div style='font-size:11px;color:#64748B;font-weight:800;letter-spacing:0.8px;text-transform:uppercase;margin-bottom:6px'>Season Record</div>"
+        f"<div style='font-size:26px;font-weight:900;color:#0F3460'>{_t3_record_str}</div>"
+        f"<div style='font-size:12px;color:#64748B;margin-top:4px'>Win %: {_t3_win_pct}%</div>"
+        f"</div>", unsafe_allow_html=True)
+    col2.markdown(
+        f"<div style='background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border:1px solid rgba(21,128,61,0.15);"
+        f"border-radius:14px;padding:16px 20px;text-align:center'>"
+        f"<div style='font-size:11px;color:#64748B;font-weight:800;letter-spacing:0.8px;text-transform:uppercase;margin-bottom:6px'>Roto Pts For</div>"
+        f"<div style='font-size:26px;font-weight:900;color:#15803D'>{my_pts_for:.1f}</div>"
+        f"<div style='font-size:12px;color:#64748B;margin-top:4px'>Cumulative this season</div>"
+        f"</div>", unsafe_allow_html=True)
+    col3.markdown(
+        f"<div style='background:linear-gradient(135deg,#FFF5F5,#FEE2E2);border:1px solid rgba(185,28,28,0.12);"
+        f"border-radius:14px;padding:16px 20px;text-align:center'>"
+        f"<div style='font-size:11px;color:#64748B;font-weight:800;letter-spacing:0.8px;text-transform:uppercase;margin-bottom:6px'>Roto Pts Against</div>"
+        f"<div style='font-size:26px;font-weight:900;color:#B91C1C'>{my_pts_against:.1f}</div>"
+        f"<div style='font-size:12px;color:#64748B;margin-top:4px'>Scored against you</div>"
+        f"</div>", unsafe_allow_html=True)
 
     # Overall standings
     st.subheader("League Standings")
@@ -3784,19 +4002,33 @@ with tab3:
             "Roto Pts For": round(pf, 1),
             "Roto Pts Against": round(pa, 1),
         })
-    st.dataframe(
-        pd.DataFrame(standings_rows),
-        use_container_width=True, hide_index=True,
-        column_config={
-            "Team":              st.column_config.TextColumn("Team", width="medium"),
-            "Owner":             st.column_config.TextColumn("Owner", width="small"),
-            "W":                 num_cfg("W"),
-            "L":                 num_cfg("L"),
-            "T":                 num_cfg("T"),
-            "Roto Pts For":      pts_cfg("Roto Pts"),
-            "Roto Pts Against":  pts_cfg("Roto Pts Against"),
-        }
-    )
+
+    # ── Situation Card ────────────────────────────────────────────────────────
+    _t3_my_row  = next((r for r in standings_rows if r["Team"] == my_team.team_name), None)
+    _t3_rank    = next((i+1 for i,r in enumerate(standings_rows) if r["Team"] == my_team.team_name), "?")
+    _t3_n       = len(standings_rows)
+    _t3_status  = "good" if _t3_rank <= _t3_n // 3 else "warning" if _t3_rank <= _t3_n * 2 // 3 else "bad"
+    _t3_record  = f"{my_team.wins}W – {my_team.losses}L" + (f" – {my_team.ties}T" if my_team.ties else "")
+    _situation_card("📊", f"#{_t3_rank} of {_t3_n} teams", [
+        _t3_record,
+        f"Roto Pts For: {my_pts_for:.0f}",
+        f"Roto Pts Against: {my_pts_against:.0f}",
+    ], _t3_status)
+
+    with st.expander("View Full Standings", expanded=_full_mode):
+        st.dataframe(
+            pd.DataFrame(standings_rows),
+            use_container_width=True, hide_index=True,
+            column_config={
+                "Team":              st.column_config.TextColumn("Team", width="medium"),
+                "Owner":             st.column_config.TextColumn("Owner", width="small"),
+                "W":                 num_cfg("W"),
+                "L":                 num_cfg("L"),
+                "T":                 num_cfg("T"),
+                "Roto Pts For":      pts_cfg("Roto Pts"),
+                "Roto Pts Against":  pts_cfg("Roto Pts Against"),
+            }
+        )
 
     # ── Projected Roto Category Standings ─────────────────────────────────────
     st.divider()
@@ -3947,7 +4179,8 @@ with tab3:
             c1.metric(my_team.team_name + " (You)", round(my_score, 1))
             c2.metric(opp_name, round(opp_score, 1))
         else:
-            st.info("No current matchup found.")
+            _empty_state("🤝", "No active matchup found",
+                     "Matchup data appears between Monday and Sunday of each scoring week.")
     except Exception:
         st.info("Matchup data not available yet for this week.")
 
@@ -4193,7 +4426,8 @@ with tab4:
                     })
 
         if not suggestions:
-            st.info("No mutually beneficial trades found right now. Check back as rosters change.")
+            _empty_state("🔄", "No clear trade targets right now",
+                     "The analyzer looks for trades where both teams improve. Check back as rosters and standings shift.")
         else:
             sug_df = (
                 pd.DataFrame(suggestions)
@@ -4331,21 +4565,39 @@ with tab5:
         "WAR":            war_cfg(),
         **GRADE_COL_CFG,
         "🌡️ Heat":        HEAT_CFG,
-        "Blended Score":  pts_cfg("Blended Score ⭐"),
-        "Recent Avg/Wk":  pts_cfg("Recent /Wk"),
-        "Season Avg/Wk":  pts_cfg("Season /Wk"),
+        "Blended Score":  st.column_config.NumberColumn("Blended Score ⭐", format="%.1f",
+                              help="Weighted score combining prior season, current season, and recent form. "
+                                   "Higher = stronger start candidate right now."),
+        "Recent Avg/Wk":  st.column_config.NumberColumn("Recent /Wk", format="%.1f",
+                              help="Average roto points per week over the last 2 weeks."),
+        "Season Avg/Wk":  st.column_config.NumberColumn("Season /Wk", format="%.1f",
+                              help="Average roto points per week over the full current season."),
         f"{prev_year} /Wk": pts_cfg(f"{prev_year} /Wk"),
-        "Trend":          pts_cfg("Trend"),
+        "Trend":          st.column_config.NumberColumn("Trend", format="%.1f",
+                              help="Recent /Wk minus Season /Wk. Positive = heating up, negative = cooling down."),
         "Proj. Total":    roto_cfg("Roto Val"),
         "Status":         st.column_config.TextColumn("Health", width="small"),
     }
+
+    # ── Situation Card ────────────────────────────────────────────────────────
+    _t5_hot   = sit_df[sit_df["Trend"] > 2]
+    _t5_cold  = sit_df[sit_df["Trend"] < -2]
+    _t5_hurt  = sit_df[sit_df["Status"].isin(["INJURY_RESERVE","OUT","DOUBTFUL"])]
+    _t5_top   = sit_df.iloc[0]["Player"] if not sit_df.empty else "—"
+    _t5_status = "bad" if not _t5_hurt.empty else "warning" if not _t5_cold.empty else "good"
+    _situation_card("🪑", f"Start {_t5_top} — highest blended score", [
+        f"🔥 {len(_t5_hot)} running hot",
+        f"❄️ {len(_t5_cold)} running cold",
+        f"🚨 {len(_t5_hurt)} health concerns" if not _t5_hurt.empty else "✅ All clear health-wise",
+    ], _t5_status)
 
     styled_sit = apply_grade_colors(
         apply_badges(sit_df).style
         .applymap(trend_color, subset=["Trend"])
     )
-    st.dataframe(styled_sit, use_container_width=True, hide_index=True,
-                 column_config=sit_col_cfg)
+    with st.expander(f"View full Start/Sit table ({len(sit_df)} players)", expanded=_full_mode):
+        st.dataframe(styled_sit, use_container_width=True, hide_index=True,
+                     column_config=sit_col_cfg)
 
     hot  = sit_df[(sit_df["Trend"] > 2)  & (~sit_df["Status"].isin(["INJURY_RESERVE", "OUT"]))]
     cold = sit_df[sit_df["Trend"] < -2]
@@ -4380,6 +4632,7 @@ with tab6:
     st.header("Streaming Pitchers")
     st.caption("Top available SP and RP free agents ranked by **roto value** — ideal for week-to-week streaming. "
                "⚠️ In roto, a bad start can crater your ERA/WHIP for weeks — check the ERA/WHIP columns before adding.")
+    _freshness_badge("Projections update daily · Pitcher pool refreshes on page load", "📡")
 
     stream_n = st.slider("Number of pitchers to show", 10, 60, 25, key="stream_n")
 
@@ -4453,7 +4706,9 @@ with tab6:
                 "Player":            st.column_config.TextColumn("Player", width="medium"),
                 "Type":              st.column_config.TextColumn("Type", width="small"),
                 "Pro Team":          st.column_config.TextColumn("Team", width="small"),
-                "% Owned":           pct_cfg("% Own"),
+                "% Owned":           st.column_config.NumberColumn("% Own", format="%.0f%%",
+                                         help="% of ESPN leagues that have this player rostered. "
+                                              "Under 50% = true streaming pickup."),
                 stream_proj_col:     roto_cfg("Roto Val"),
                 "ERA/WHIP Risk":     st.column_config.TextColumn("ERA/WHIP Risk", width="small",
                                          help="⚠️ = pitcher projects to hurt your ERA/WHIP in roto"),
@@ -4469,11 +4724,24 @@ with tab6:
                 "FG IP":             num_cfg("IP", "%.0f"),
                 "Status":            st.column_config.TextColumn("Health", width="small"),
             }
-            st.dataframe(
-                apply_grade_colors(apply_badges(p_df).style),
-                use_container_width=True, hide_index=True,
-                column_config=stream_col_cfg
-            )
+            # ── Situation Card ────────────────────────────────────────────────
+            if not p_df.empty:
+                _t6_top   = p_df.iloc[0]
+                _t6_era   = _t6_top.get("FG ERA", "—")
+                _t6_risky = len(p_df[p_df.get("ERA/WHIP Risk", pd.Series(dtype=str)).str.contains("⚠️", na=False)]) if "ERA/WHIP Risk" in p_df.columns else 0
+                _t6_era_ok = isinstance(_t6_era, (int, float)) and float(_t6_era) < 4.00
+                _situation_card("🌊", f"Best stream: {_t6_top['Player']}", [
+                    f"ERA: {_t6_era:.2f}" if isinstance(_t6_era, (int,float)) else f"ERA: {_t6_era}",
+                    f"Roto Val: {_t6_top[stream_proj_col]:+.1f}",
+                    f"⚠️ {_t6_risky} ERA/WHIP risks in list" if _t6_risky else "✅ Clean ERA/WHIP options",
+                ], "good" if _t6_era_ok else "warning")
+
+            with st.expander(f"View all {len(p_df)} streamers", expanded=_full_mode):
+                st.dataframe(
+                    apply_grade_colors(apply_badges(p_df).style),
+                    use_container_width=True, hide_index=True,
+                    column_config=stream_col_cfg
+                )
 
             # Top streaming pick
             top_streamers = p_df[p_df["% Owned"] < 50].head(3)
@@ -4486,7 +4754,7 @@ with tab6:
                 )
 
         except Exception as e:
-            st.error(f"Could not load pitchers: {e}")
+            st.error("⚠️ Couldn't load pitcher data from ESPN right now. Try refreshing the page.")
 
 # ─────────────────────────────────────────────────────────────────────────────
 # TAB 7: PLAYER NEWS
@@ -4537,7 +4805,7 @@ with tab7:
 
     # ── Section 2: Free Agents ────────────────────────────────────────────────
     st.subheader("🔍 Free Agent News")
-    with st.spinner("Loading free agents…"):
+    with st.spinner("Scanning FA news…"):
         try:
             news_fa_list = league.free_agents(size=150)
             fa_names = [p.name for p in news_fa_list]
@@ -5063,7 +5331,8 @@ with tab9:
                 })
 
         if not pace_rows:
-            st.info("No 2026 season stats available yet — check back once the season is underway.")
+            _empty_state("📊", "No 2026 season stats yet",
+                     "Stats will appear here once the season gets underway. Projections are available now in the other sections.")
         else:
             pace_df = pd.DataFrame(pace_rows)
 
@@ -5863,7 +6132,8 @@ with tab9:
                 break
 
         if opp_team is None:
-            st.info("No current matchup found.")
+            _empty_state("🤝", "No active matchup found",
+                     "Matchup data appears between Monday and Sunday of each scoring week.")
         else:
             opp_name = getattr(opp_team, "team_name", str(opp_team))
             st.markdown(
@@ -6208,7 +6478,7 @@ st.markdown(
       Player data © ESPN &nbsp;·&nbsp; Projections © FanGraphs &nbsp;·&nbsp;
       MLB statistics © MLB Advanced Media &nbsp;·&nbsp;
       Player likenesses © MLBPA<br>
-      <span style="font-size:10px">
+      <span style="font-size:12px">
         All projections are third-party estimates provided as a reference guide only —
         the creator claims no ownership and accepts no liability for fantasy decisions.
         Use at your own risk. &nbsp;·&nbsp;
