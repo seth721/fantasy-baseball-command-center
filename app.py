@@ -3895,6 +3895,15 @@ with tab2:
                         worst_name = my_roto_by_pos[slot]["worst_name"]
                         gain       = row[fa_proj_col] - worst_rv
                         if gain > 0:
+                            # Action rating: adjust effective gain downward if drop candidate
+                            # has meaningful roto value (harder to justify dropping them)
+                            _net = gain - max(0.0, worst_rv * 0.5)
+                            if _net >= 1.5:
+                                _action = "✅ Do It"
+                            elif _net >= 0.5:
+                                _action = "🤔 Consider It"
+                            else:
+                                _action = "⏭️ Not Worth It"
                             upgrades.append({
                                 "Player":          row["Player"],
                                 "Position":        row["Position"],
@@ -3905,6 +3914,7 @@ with tab2:
                                 "Roto Gain":       round(gain, 2),
                                 "Drop Candidate":  worst_name,
                                 "Drop RV":         round(worst_rv, 2),
+                                "Action":          _action,
                                 "Status":          row["Status"],
                             })
                             break
@@ -3913,9 +3923,18 @@ with tab2:
                     upg_df = apply_badges(
                         pd.DataFrame(upgrades).sort_values("Roto Gain", ascending=False)
                     )
+                    # Put Action column first for scannability
+                    _upg_cols = ["Action", "Player", "Position", "Pro Team",
+                                 fa_proj_col, "Helps", "Replaces Slot",
+                                 "Roto Gain", "Drop Candidate", "Drop RV", "Status"]
+                    upg_df = upg_df[[c for c in _upg_cols if c in upg_df.columns]]
                     st.dataframe(
                         upg_df, use_container_width=True, hide_index=True,
                         column_config={
+                            "Action":          st.column_config.TextColumn("Action",         width="small",
+                                                   help="✅ Do It = clear upgrade, easy drop  "
+                                                        "🤔 Consider It = solid gain but weigh the drop  "
+                                                        "⏭️ Not Worth It = marginal improvement"),
                             "Player":          st.column_config.TextColumn("Player",         width="medium"),
                             "Position":        st.column_config.TextColumn("Pos",            width="small"),
                             "Pro Team":        st.column_config.TextColumn("Team",           width="small"),
@@ -3931,9 +3950,11 @@ with tab2:
                         }
                     )
                     st.caption(
-                        "**Drop Candidate** = the player on your roster with the lowest roto value "
-                        "at that position slot.  **Their RV** = their current projected roto value "
-                        "— the lower it is, the easier the drop decision."
+                        "**Action** = ✅ Do It (gain ≥ 1.5 roto pts, easy drop) · "
+                        "🤔 Consider It (solid gain, weigh the drop) · "
+                        "⏭️ Not Worth It (marginal improvement).  "
+                        "**Drop Candidate** = weakest roster player at that slot.  "
+                        "**Their RV** = the lower it is, the easier the drop."
                     )
                 else:
                     st.success("Your roster is already stronger than available free agents at every position!")
