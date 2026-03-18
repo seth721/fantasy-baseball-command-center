@@ -4,7 +4,139 @@ import requests
 import streamlit as st
 import pandas as pd
 from datetime import datetime, timezone, timedelta
+from types import SimpleNamespace
 from espn_api.baseball import League
+
+
+# ── Demo-mode sample data ─────────────────────────────────────────────────────
+def _dp(name, pos, slots, pro_team, status="ACTIVE", lineup_slot=None, pct=85.0):
+    """Create a lightweight demo player object."""
+    p = SimpleNamespace()
+    p.name         = name
+    p.position     = pos
+    p.eligibleSlots = slots
+    p.proTeam      = pro_team
+    p.injuryStatus = status
+    p.lineupSlot   = lineup_slot or pos
+    p.playerId     = abs(hash(name)) % 999999
+    p.stats        = {}
+    p.percent_owned = pct
+    return p
+
+def _build_demo_data():
+    """Return (league, league_prev, fg) filled with realistic sample values."""
+
+    # ── FanGraphs-style projection dict ──────────────────────────────────────
+    demo_fg = {
+        # My roster — batters
+        "Aaron Judge":      {"HR":47,"R":96,"RBI":112,"SB":6, "AVG":0.289,"OPS":0.980,"WAR":7.2,"G":145,"fg_pts":48.1},
+        "Freddie Freeman":  {"HR":23,"R":88,"RBI":96, "SB":4, "AVG":0.299,"OPS":0.900,"WAR":4.5,"G":148,"fg_pts":33.2},
+        "Bobby Witt Jr.":   {"HR":31,"R":101,"RBI":98,"SB":36,"AVG":0.281,"OPS":0.849,"WAR":6.8,"G":155,"fg_pts":42.7},
+        "Julio Rodríguez":  {"HR":29,"R":91,"RBI":86,"SB":34,"AVG":0.268,"OPS":0.829,"WAR":5.1,"G":152,"fg_pts":39.0},
+        "J.T. Realmuto":    {"HR":18,"R":66,"RBI":79,"SB":10,"AVG":0.262,"OPS":0.798,"WAR":3.5,"G":128,"fg_pts":26.4},
+        "Andrés Giménez":   {"HR":15,"R":68,"RBI":72,"SB":12,"AVG":0.258,"OPS":0.761,"WAR":3.1,"G":148,"fg_pts":21.3},
+        "Yordan Alvarez":   {"HR":37,"R":90,"RBI":108,"SB":2,"AVG":0.292,"OPS":0.970,"WAR":6.0,"G":141,"fg_pts":44.2},
+        "Gunnar Henderson": {"HR":33,"R":93,"RBI":95,"SB":18,"AVG":0.274,"OPS":0.873,"WAR":5.8,"G":152,"fg_pts":40.5},
+        # My roster — pitchers
+        "Gerrit Cole":      {"W":13,"ERA":2.98,"WHIP":1.05,"SO":200,"SV":0,"WAR":4.2,"GS":30,"fg_pts":35.8},
+        "Spencer Strider":  {"W":14,"ERA":2.89,"WHIP":0.98,"SO":226,"SV":0,"WAR":5.1,"GS":30,"fg_pts":40.1},
+        "Emmanuel Clase":   {"W":2, "ERA":2.75,"WHIP":0.92,"SO":72, "SV":38,"WAR":2.1,"GS":0, "fg_pts":29.3},
+        "Logan Webb":       {"W":13,"ERA":3.10,"WHIP":1.08,"SO":185,"SV":0,"WAR":3.9,"GS":31,"fg_pts":32.0},
+        # Free agents — batters
+        "Pete Alonso":      {"HR":38,"R":86,"RBI":106,"SB":2, "AVG":0.258,"OPS":0.862,"WAR":4.0,"G":155,"fg_pts":34.7},
+        "Jazz Chisholm Jr.":{"HR":22,"R":79,"RBI":81,"SB":19,"AVG":0.257,"OPS":0.800,"WAR":3.2,"G":145,"fg_pts":28.9},
+        "Cody Bellinger":   {"HR":24,"R":82,"RBI":83,"SB":14,"AVG":0.271,"OPS":0.831,"WAR":3.6,"G":142,"fg_pts":29.5},
+        "Anthony Santander":{"HR":35,"R":81,"RBI":99,"SB":3, "AVG":0.252,"OPS":0.836,"WAR":2.8,"G":155,"fg_pts":30.2},
+        "Isaac Paredes":    {"HR":26,"R":74,"RBI":84,"SB":2, "AVG":0.249,"OPS":0.808,"WAR":2.4,"G":148,"fg_pts":25.1},
+        # Free agents — pitchers
+        "Tyler Glasnow":    {"W":12,"ERA":3.15,"WHIP":1.08,"SO":206,"SV":0,"WAR":4.5,"GS":28,"fg_pts":36.2},
+        "Josh Hader":       {"W":3, "ERA":2.30,"WHIP":0.85,"SO":81, "SV":42,"WAR":2.8,"GS":0, "fg_pts":30.1},
+        "Framber Valdez":   {"W":14,"ERA":3.28,"WHIP":1.12,"SO":190,"SV":0,"WAR":3.8,"GS":32,"fg_pts":31.5},
+        "Ryan Helsley":     {"W":3, "ERA":2.55,"WHIP":0.90,"SO":78, "SV":40,"WAR":2.5,"GS":0, "fg_pts":28.7},
+        "Tarik Skubal":     {"W":15,"ERA":2.82,"WHIP":1.01,"SO":212,"SV":0,"WAR":5.3,"GS":31,"fg_pts":41.8},
+    }
+
+    # ── My roster ─────────────────────────────────────────────────────────────
+    _my_roster = [
+        _dp("Aaron Judge",      "OF",  ["OF","BE"],        "NYY", pct=99),
+        _dp("Freddie Freeman",  "1B",  ["1B","BE"],        "LAD", pct=98),
+        _dp("Bobby Witt Jr.",   "SS",  ["SS","BE"],        "KCR", pct=99),
+        _dp("Julio Rodríguez",  "OF",  ["OF","BE"],        "SEA", pct=97),
+        _dp("J.T. Realmuto",    "C",   ["C","BE"],         "PHI", pct=91),
+        _dp("Andrés Giménez",   "2B",  ["2B","BE"],        "CLE", pct=72),
+        _dp("Yordan Alvarez",   "DH",  ["DH","OF","BE"],   "HOU", pct=98),
+        _dp("Gunnar Henderson", "3B",  ["3B","SS","BE"],   "BAL", pct=96),
+        _dp("Gerrit Cole",      "SP",  ["SP","P","BE"],    "NYY", pct=97),
+        _dp("Spencer Strider",  "SP",  ["SP","P","BE"],    "ATL", pct=98),
+        _dp("Emmanuel Clase",   "RP",  ["RP","P","BE"],    "CLE", pct=92),
+        _dp("Logan Webb",       "SP",  ["SP","P","BE"],    "SFG", pct=89),
+    ]
+
+    # ── Opponent roster (for matchup) ──────────────────────────────────────────
+    _opp_roster = [
+        _dp("Shohei Ohtani",    "DH",  ["DH","OF"],        "LAD", pct=100),
+        _dp("Mookie Betts",     "OF",  ["OF","SS"],        "LAD", pct=99),
+        _dp("Fernando Tatis Jr.","SS", ["SS","OF"],        "SDP", pct=97),
+        _dp("Shane Bieber",     "SP",  ["SP","P"],         "CLE", pct=88),
+        _dp("Ryan Helsley",     "RP",  ["RP","P"],         "STL", pct=88),
+    ]
+
+    # ── Matchup ────────────────────────────────────────────────────────────────
+    _opp_team = SimpleNamespace(
+        team_name="Space Lasers", team_abbrev="SPC",
+        wins=6, losses=6, ties=0, standing=5,
+        roster=_opp_roster, schedule=[],
+    )
+    _matchup = SimpleNamespace(
+        home_team=None, away_team=_opp_team,
+        home_score=38.5, away_score=31.2,
+    )
+    _my_team = SimpleNamespace(
+        team_name="Demo Sluggers", team_abbrev="DEM",
+        wins=8, losses=4, ties=0, standing=2,
+        roster=_my_roster,
+        schedule=[_matchup],
+    )
+    _matchup.home_team = _my_team
+
+    # ── Other league teams (standings) ────────────────────────────────────────
+    _other_teams = [
+        SimpleNamespace(team_name="Big Fly Club",    wins=10,losses=2, ties=0,standing=1, roster=[], schedule=[]),
+        _my_team,  # standing=2
+        SimpleNamespace(team_name="Space Lasers",    wins=6, losses=6, ties=0,standing=5, roster=_opp_roster,schedule=[]),
+        SimpleNamespace(team_name="Dingers Only",    wins=9, losses=3, ties=0,standing=3, roster=[], schedule=[]),
+        SimpleNamespace(team_name="K-Rate Kings",    wins=7, losses=5, ties=0,standing=4, roster=[], schedule=[]),
+        SimpleNamespace(team_name="Launch Angle LLC",wins=5, losses=7, ties=0,standing=6, roster=[], schedule=[]),
+        SimpleNamespace(team_name="Shift Busters",   wins=4, losses=8, ties=0,standing=7, roster=[], schedule=[]),
+        SimpleNamespace(team_name="ERA Enjoyers",    wins=4, losses=8, ties=0,standing=8, roster=[], schedule=[]),
+        SimpleNamespace(team_name="BABIP Believers", wins=3, losses=9, ties=0,standing=9, roster=[], schedule=[]),
+        SimpleNamespace(team_name="Regression FC",   wins=2, losses=10,ties=0,standing=10,roster=[], schedule=[]),
+    ]
+
+    # ── Free agents ──────────────────────────────────────────────────────────
+    _fa_players = [
+        _dp("Pete Alonso",       "1B",  ["1B","BE"],       "NYM",  pct=60),
+        _dp("Jazz Chisholm Jr.", "2B",  ["2B","OF","BE"],  "NYY",  pct=55),
+        _dp("Cody Bellinger",    "OF",  ["OF","1B","BE"],  "NYY",  pct=52),
+        _dp("Anthony Santander", "OF",  ["OF","BE"],       "TOR",  pct=58),
+        _dp("Isaac Paredes",     "3B",  ["3B","1B","BE"],  "HOU",  pct=48),
+        _dp("Tyler Glasnow",     "SP",  ["SP","P","BE"],   "LAD",  pct=61),
+        _dp("Josh Hader",        "RP",  ["RP","P","BE"],   "PHI",  pct=66),
+        _dp("Framber Valdez",    "SP",  ["SP","P","BE"],   "HOU",  pct=57),
+        _dp("Ryan Helsley",      "RP",  ["RP","P","BE"],   "STL",  pct=58),
+        _dp("Tarik Skubal",      "SP",  ["SP","P","BE"],   "DET",  pct=78),
+    ]
+
+    # ── League ────────────────────────────────────────────────────────────────
+    _settings = SimpleNamespace(reg_season_count=23)
+    _demo_league = SimpleNamespace(
+        teams=_other_teams,
+        currentMatchupPeriod=8,
+        settings=_settings,
+        free_agents=lambda size=100, position=None: _fa_players,
+    )
+
+    return _demo_league, None, demo_fg, _my_team
 
 
 # ── FanGraphs Projection Fetcher ──────────────────────────────────────────────
@@ -1229,6 +1361,25 @@ with st.sidebar:
         unsafe_allow_html=True,
     )
 
+    # ── Demo mode toggle ───────────────────────────────────────────────────────
+    _demo_active = st.session_state.get("demo_mode", False)
+    if not st.session_state.get("league"):
+        _demo_col1, _demo_col2 = st.columns([3, 2])
+        with _demo_col1:
+            st.markdown(
+                "<div style='font-size:12px;color:#64748B;padding-top:6px'>"
+                "No ESPN account? Try a preview first.</div>",
+                unsafe_allow_html=True,
+            )
+        with _demo_col2:
+            if st.button("🎮 Try Demo", use_container_width=True,
+                         type="secondary" if not _demo_active else "primary"):
+                st.session_state["demo_mode"] = not _demo_active
+                st.rerun()
+        st.markdown("<div style='margin-bottom:4px'></div>", unsafe_allow_html=True)
+    if _demo_active and not st.session_state.get("league"):
+        st.info("🎮 **Demo mode** — showing sample data. Connect your league to see real stats.", icon="🎮")
+
     if already_connected:
         _expander_label = "✅ Connected — click to update"
     else:
@@ -1487,6 +1638,24 @@ with st.sidebar:
         unsafe_allow_html=True,
     )
 
+    # ── Keyboard shortcuts hint ───────────────────────────────────────────────
+    with st.expander("⌨️ Keyboard Shortcuts"):
+        st.markdown(
+            "Hold **Alt** and press a number key to jump directly to a tab:\n\n"
+            "| Key | Tab |\n|---|---|\n"
+            "| Alt+1 | 🏢 Front Office |\n"
+            "| Alt+2 | 🪑 Start / Sit |\n"
+            "| Alt+3 | 🔍 Waiver Wire |\n"
+            "| Alt+4 | 🌊 Streaming |\n"
+            "| Alt+5 | 📋 Lineup |\n"
+            "| Alt+6 | 📊 Team Overview |\n"
+            "| Alt+7 | 🔄 Trade |\n"
+            "| Alt+8 | 📰 News |\n"
+            "| Alt+9 | ⚾ Games |\n"
+            "| Alt+0 | 🎯 Roto Tools |\n\n"
+            "_Won't fire when you're typing in a text box._"
+        )
+
     # ── Terms & Conditions (sidebar bottom) ──────────────────────────────────
     st.markdown("<div style='margin-top:24px'></div>", unsafe_allow_html=True)
     with st.expander("📋 Terms & Conditions"):
@@ -1661,6 +1830,14 @@ if connect:
 league = st.session_state.league
 league_prev = st.session_state.league_prev
 
+# ── Demo mode: load sample data when no real league is connected ──────────────
+_demo_mode = st.session_state.get("demo_mode", False) and league is None
+if _demo_mode:
+    _d_league, _d_league_prev, _d_fg, _d_my_team = _build_demo_data()
+    league      = _d_league
+    league_prev = _d_league_prev
+    st.session_state["_demo_my_team"] = _d_my_team
+
 # Manager mode — True = show all tables (obsessive), False = key insights only (passive)
 _full_mode = st.session_state.get("_full_mode", False)
 
@@ -1672,9 +1849,12 @@ if league is None:
 prev_stats = build_prev_stats(league_prev) if league_prev else {}
 
 # ── FanGraphs projections ─────────────────────────────────────────────────────
-fg_proj_type = FG_PROJ_SYSTEMS.get(fg_proj_label, "steamer")
-with st.spinner(f"Loading {fg_proj_label} projections from FanGraphs…"):
-    fg = fetch_fg_projections(fg_proj_type)
+if _demo_mode:
+    fg = _d_fg  # pre-built sample projections, no network call needed
+else:
+    fg_proj_type = FG_PROJ_SYSTEMS.get(fg_proj_label, "steamer")
+    with st.spinner(f"Loading {fg_proj_label} projections from FanGraphs…"):
+        fg = fetch_fg_projections(fg_proj_type)
 
 # ── Roto Value (replaces fantasy-points for roto leagues) ─────────────────────
 # Anchors: MLB full-season league-average ± 1 SD for each roto category.
@@ -2066,25 +2246,28 @@ if prev_stats:
     st.sidebar.info(blend_label)
 
 # ── Team Selector ─────────────────────────────────────────────────────────────
-team_names = [t.team_name for t in league.teams]
-saved_team_id = cfg.get("team_id")
-default_index = 0
-if saved_team_id:
-    for i, t in enumerate(league.teams):
-        if t.team_id == saved_team_id:
-            default_index = i
-            break
+if _demo_mode:
+    # In demo mode, my_team is fixed; skip the ESPN team_id lookup
+    my_team = st.session_state.get("_demo_my_team") or league.teams[1]
+    selected_team_name = my_team.team_name
+    st.sidebar.selectbox("My Team", [my_team.team_name], index=0,
+                         disabled=True, help="Connect your league to select your real team")
+else:
+    team_names = [t.team_name for t in league.teams]
+    saved_team_id = cfg.get("team_id")
+    default_index = 0
+    if saved_team_id:
+        for i, t in enumerate(league.teams):
+            if getattr(t, "team_id", None) == saved_team_id:
+                default_index = i
+                break
 
-selected_team_name = st.sidebar.selectbox(
-    "My Team", team_names, index=default_index
-)
-# Save team choice whenever it changes
-selected_team = next(t for t in league.teams if t.team_name == selected_team_name)
-if selected_team.team_id != cfg.get("team_id"):
-    cfg["team_id"] = selected_team.team_id
-    save_config(cfg)
-
-my_team = selected_team
+    selected_team_name = st.sidebar.selectbox("My Team", team_names, index=default_index)
+    selected_team = next(t for t in league.teams if t.team_name == selected_team_name)
+    if getattr(selected_team, "team_id", None) != cfg.get("team_id"):
+        cfg["team_id"] = getattr(selected_team, "team_id", None)
+        save_config(cfg)
+    my_team = selected_team
 
 # ── Shared helper: build projected team stats + ranks ─────────────────────────
 def _build_team_proj_shared():
@@ -2179,6 +2362,16 @@ def _situation_card(icon: str, headline: str, details: list[str],
         unsafe_allow_html=True,
     )
 
+def _csv_btn(df: pd.DataFrame, filename: str, label: str = "⬇️ Export CSV") -> None:
+    """Render a compact CSV download button below a dataframe."""
+    st.download_button(
+        label=label,
+        data=df.to_csv(index=False).encode("utf-8"),
+        file_name=filename,
+        mime="text/csv",
+        use_container_width=False,
+    )
+
 def _freshness_badge(ttl_desc: str, icon: str = "🕐") -> None:
     """Show a subtle 'data freshness' line under a section header."""
     now = datetime.now().strftime("%-I:%M %p")
@@ -2204,6 +2397,71 @@ def _empty_state(icon: str, message: str, hint: str = "") -> None:
         unsafe_allow_html=True,
     )
 
+# ── Demo mode banner ─────────────────────────────────────────────────────────
+if _demo_mode:
+    st.markdown(
+        "<div style='background:linear-gradient(135deg,#7C3AED,#4F46E5);"
+        "border-radius:12px;padding:12px 20px;margin-bottom:12px;"
+        "display:flex;align-items:center;gap:14px'>"
+        "<span style='font-size:28px'>🎮</span>"
+        "<div>"
+        "<div style='font-size:14px;font-weight:800;color:#fff'>Demo Mode — Sample Data</div>"
+        "<div style='font-size:12px;color:rgba(255,255,255,0.75);margin-top:2px'>"
+        "You're previewing with fictional stats. "
+        "Enter your ESPN credentials in the sidebar to see your real league.</div>"
+        "</div></div>",
+        unsafe_allow_html=True,
+    )
+
+# ── Onboarding tour ───────────────────────────────────────────────────────────
+_tour_key  = "tour_step"
+_tour_done = st.session_state.get("tour_done", False)
+if not _tour_done and not st.session_state.get(_tour_key):
+    st.session_state[_tour_key] = 0   # start at step 0 on first load
+
+_TOUR_STEPS = [
+    ("🏢", "Front Office",        "Your daily dashboard — weather outlook, SP starts, hot/cold streaks, GM To-Do list, and top FA adds at a glance."),
+    ("🪑", "Start / Sit",         "See who to start vs sit today, factoring in matchup, park, and projected stats."),
+    ("🔍", "Waiver Wire",         "Top available free agents ranked by projected roto value. Filter by position and sort by category need."),
+    ("🌊", "Streaming Pitchers",  "Find 1–3 start streamers with the best matchups this week — sorted by schedule and projected output."),
+    ("🎯", "Roto Tools",          "Deep dives: Buy Low/Sell High, Emergency Replacements, Matchup Breakdown, Standings Trend, and Upgrade Targets."),
+]
+
+_cur_step = st.session_state.get(_tour_key, -1)
+if not _tour_done and 0 <= _cur_step < len(_TOUR_STEPS):
+    _t_icon, _t_title, _t_desc = _TOUR_STEPS[_cur_step]
+    _prog = f"Step {_cur_step + 1} of {len(_TOUR_STEPS)}"
+    _tc1, _tc2, _tc3 = st.columns([6, 1, 1])
+    with _tc1:
+        st.markdown(
+            f"<div style='background:linear-gradient(135deg,#F0F7FF,#DBEAFE);"
+            f"border:1.5px solid #BFDBFE;border-radius:12px;padding:14px 18px;"
+            f"display:flex;align-items:center;gap:14px'>"
+            f"<span style='font-size:30px'>{_t_icon}</span>"
+            f"<div>"
+            f"<div style='font-size:11px;font-weight:800;color:#1565C0;letter-spacing:0.6px'>"
+            f"👋 QUICK TOUR · {_prog}</div>"
+            f"<div style='font-size:14px;font-weight:700;color:#0F3460;margin-top:2px'>"
+            f"{_t_title}</div>"
+            f"<div style='font-size:13px;color:#475569;margin-top:3px'>{_t_desc}</div>"
+            f"</div></div>",
+            unsafe_allow_html=True,
+        )
+    with _tc2:
+        if st.button("Next ›", use_container_width=True, key="tour_next"):
+            if _cur_step + 1 >= len(_TOUR_STEPS):
+                st.session_state["tour_done"] = True
+                del st.session_state[_tour_key]
+            else:
+                st.session_state[_tour_key] = _cur_step + 1
+            st.rerun()
+    with _tc3:
+        if st.button("Skip", use_container_width=True, key="tour_skip"):
+            st.session_state["tour_done"] = True
+            if _tour_key in st.session_state:
+                del st.session_state[_tour_key]
+            st.rerun()
+
 # ── Tabs ──────────────────────────────────────────────────────────────────────
 # Tab variables keep their original names so all `with tabN:` blocks need no changes.
 # The visual order is controlled by the list order below.
@@ -2219,6 +2477,34 @@ tab0, tab5, tab2, tab6, tab1, tab3, tab4, tab7, tab8, tab9 = st.tabs([
     "⚾ Games",               # tab8 — browse anytime
     "🎯 Roto Tools",         # tab9 — deep dives
 ])
+
+# ── Keyboard shortcuts: press 1-9 (or 0) to jump between tabs ────────────────
+# Uses st.components to inject JS into the parent Streamlit frame.
+import streamlit.components.v1 as _components
+_components.html("""
+<script>
+(function() {
+  function clickTab(n) {
+    var tabs = window.parent.document.querySelectorAll('[data-testid="stTabs"] button[role="tab"]');
+    if (tabs && tabs[n]) { tabs[n].click(); tabs[n].scrollIntoView({behavior:'smooth',block:'nearest'}); }
+  }
+  window.parent.document.addEventListener('keydown', function(e) {
+    // Don't fire if user is typing in an input / textarea / select
+    var tag = e.target.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || e.target.isContentEditable) return;
+    // Alt+1..9,0  →  tabs 1..10  (Alt avoids clashing with browser shortcuts)
+    if (e.altKey && !e.ctrlKey && !e.metaKey) {
+      var num = parseInt(e.key);
+      if (!isNaN(num)) {
+        var idx = (num === 0) ? 9 : num - 1;   // Alt+0 → tab 10
+        e.preventDefault();
+        clickTab(idx);
+      }
+    }
+  }, true);
+})();
+</script>
+""", height=0)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # TAB 0: FRONT OFFICE
@@ -3868,6 +4154,7 @@ with tab2:
                             "Status":    st.column_config.TextColumn("Health", width="small"),
                         }
                     )
+                    _csv_btn(fa_df, "waiver_wire.csv")
 
                 # ── Roto Upgrade Suggestions ──────────────────────────────────
                 st.subheader("📈 Roto Upgrade Targets")
@@ -3956,6 +4243,7 @@ with tab2:
                         "**Drop Candidate** = weakest roster player at that slot.  "
                         "**Their RV** = the lower it is, the easier the drop."
                     )
+                    _csv_btn(upg_df, "roto_upgrade_targets.csv")
                 else:
                     st.success("Your roster is already stronger than available free agents at every position!")
 
@@ -5004,7 +5292,8 @@ with tab9:
             if not fa_df_ts.empty:
                 st.subheader("🆓 Available Two-Start Free Agents")
                 st.caption("Ranked by projected roto value. Add the best available before your opponent does.")
-                st.dataframe(fa_df_ts.drop(columns=["On Roster"]).sort_values("Roto Val", ascending=False),
+                _stream_display = fa_df_ts.drop(columns=["On Roster"]).sort_values("Roto Val", ascending=False)
+                st.dataframe(_stream_display,
                              use_container_width=True, hide_index=True,
                              column_config={
                                  "Player":      st.column_config.TextColumn("Player", width="medium"),
@@ -5017,6 +5306,7 @@ with tab9:
                                  "Proj K":      num_cfg("K", "%.0f"),
                                  "Proj W":      num_cfg("W", "%.0f"),
                              })
+                _csv_btn(_stream_display, "streaming_pitchers.csv")
 
     # ════════════════════════════════════════════════════════════════════════════
     elif roto_tool == "📊 Category Gap Tracker":
